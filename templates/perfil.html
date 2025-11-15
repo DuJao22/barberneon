@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+
+{% block title %}Meu Perfil - Barbearia Premium{% endblock %}
+
+{% block content %}
+<div class="perfil-page">
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <a href="/" class="menu-btn" style="text-decoration: none;">←</a>
+                <div class="logo-container">
+                    <div class="logo">💈</div>
+                    <div class="logo-text">Barbearia Premium</div>
+                </div>
+                <div style="width: 48px;"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="perfil-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="perfil-header">
+                <div class="perfil-avatar">👤</div>
+                <h1>{{ cliente.nome }}</h1>
+                <p>{{ cliente.email }}</p>
+                {% if cliente.telefone %}
+                <p>📱 {{ cliente.telefone }}</p>
+                {% endif %}
+            </div>
+
+            <div class="perfil-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-info">
+                        <div class="stat-value">{{ cliente.pontos_fidelidade or 0 }}</div>
+                        <div class="stat-label">Pontos</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <div class="stat-value">{{ cliente.total_gasto|currency }}</div>
+                        <div class="stat-label">Total Gasto</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="perfil-section">
+                <h2>Meus Agendamentos</h2>
+                {% if agendamentos %}
+                <div class="agendamentos-list">
+                    {% for agendamento in agendamentos %}
+                    <div class="agendamento-card">
+                        <div class="agendamento-header">
+                            <span class="servico-nome">{{ agendamento.servico_nome }}</span>
+                            <span class="status-badge status-{{ agendamento.status }}">
+                                {{ agendamento.status }}
+                            </span>
+                        </div>
+                        <div class="agendamento-info">
+                            <div>👨‍✂️ {{ agendamento.barbeiro_nome }}</div>
+                            <div>📅 {{ agendamento.data_hora[:16]|replace('T', ' às ') }}</div>
+                            {% if agendamento.valor %}
+                            <div>💰 {{ agendamento.valor|currency }}</div>
+                            {% endif %}
+                        </div>
+                        {% if agendamento.observacoes %}
+                        <div class="agendamento-obs">
+                            📝 {{ agendamento.observacoes }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📅</div>
+                    <p>Você ainda não tem agendamentos</p>
+                    <a href="/agendamento" class="btn-primary">Agendar Agora</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="perfil-actions">
+                <a href="/agendamento" class="btn-action">
+                    📅 Novo Agendamento
+                </a>
+                <a href="/logout" class="btn-action btn-logout">
+                    🚪 Sair da Conta
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+.perfil-page {
+    min-height: 100vh;
+    background-color: var(--preto);
+    padding-bottom: 100px;
+}
+
+.perfil-container {
+    margin-top: 24px;
+    padding: 0 16px;
+}
+
+.perfil-header {
+    background: var(--cinza-escuro);
+    border: 2px solid var(--azul-neon);
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.perfil-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--azul-neon) 0%, var(--azul-neon-escuro) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: 0 auto 16px;
+    box-shadow: 0 4px 20px rgba(0, 217, 255, 0.4);
+}
+
+.perfil-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--branco);
+    margin-bottom: 8px;
+}
+
+.perfil-header p {
+    font-size: 14px;
+    color: var(--cinza-claro);
+    margin: 4px 0;
+}
+
+.perfil-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--cinza-escuro);
+    border: 2px solid var(--cinza-medio);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stat-icon {
+    font-size: 32px;
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--azul-neon);
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--cinza-claro);
+}
+
+.perfil-section {
+    margin-bottom: 24px;
+}
+
+.perfil-section h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--azul-neon);
+    margin-bottom: 16px;
+}
+
+.agendamentos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.agendamento-card {
+    background: var(--cinza-escuro);
+    border: 2px solid var(--cinza-medio);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.agendamento-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.servico-nome {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--branco);
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-agendado {
+    background: rgba(0, 217, 255, 0.2);
+    color: var(--azul-neon);
+}
+
+.status-confirmado {
+    background: rgba(0, 255, 136, 0.2);
+    color: var(--verde-neon);
+}
+
+.status-cancelado {
+    background: rgba(255, 0, 85, 0.2);
+    color: var(--vermelho-neon);
+}
+
+.status-concluido {
+    background: rgba(255, 215, 0, 0.2);
+    color: var(--amarelo-neon);
+}
+
+.agendamento-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--cinza-claro);
+}
+
+.agendamento-obs {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--cinza-medio);
+    font-size: 13px;
+    color: var(--cinza-claro);
+    font-style: italic;
+}
+
+.empty-state {
+    background: var(--cinza-escuro);
+    border: 2px solid var(--cinza-medio);
+    border-radius: 12px;
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    color: var(--cinza-claro);
+    margin-bottom: 24px;
+}
+
+.perfil-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-action {
+    width: 100%;
+    padding: 16px;
+    background: var(--cinza-escuro);
+    border: 2px solid var(--azul-neon);
+    border-radius: 12px;
+    color: var(--azul-neon);
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    display: block;
+}
+
+.btn-action:hover {
+    background: var(--azul-neon);
+    color: var(--preto);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+}
+
+.btn-logout {
+    border-color: var(--vermelho-neon);
+    color: var(--vermelho-neon);
+}
+
+.btn-logout:hover {
+    background: var(--vermelho-neon);
+}
+
+.btn-primary {
+    padding: 14px 32px;
+    background: linear-gradient(135deg, var(--azul-neon) 0%, var(--azul-neon-escuro) 100%);
+    border: none;
+    border-radius: 12px;
+    color: var(--preto);
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.alert-error {
+    background: rgba(255, 0, 85, 0.1);
+    border: 2px solid var(--vermelho-neon);
+    color: var(--vermelho-neon);
+}
+
+.alert-success {
+    background: rgba(0, 255, 136, 0.1);
+    border: 2px solid var(--verde-neon);
+    color: var(--verde-neon);
+}
+
+@media (max-width: 480px) {
+    .perfil-container {
+        padding: 0 12px;
+    }
+    
+    .perfil-stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

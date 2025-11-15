@@ -1,0 +1,678 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarberNeon - Transforme Sua Barbearia com Tecnologia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-blue: #00E5FF;
+            --neon-purple: #B537F2;
+            --neon-pink: #FF006B;
+            --dark-bg: #0a0a0a;
+            --dark-card: #1a1a1a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: #ffffff;
+            overflow-x: hidden;
+            background: var(--dark-bg);
+        }
+
+        /* Video Background */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(10,10,10,0.7) 0%, rgba(10,10,10,0.85) 50%, rgba(10,10,10,0.95) 100%);
+            z-index: -1;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .hero-content {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px var(--neon-blue));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            font-size: 64px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.5)); }
+            50% { filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.8)); }
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-primary {
+            display: inline-block;
+            padding: 20px 50px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 229, 255, 0.5);
+            margin-bottom: 30px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 60px rgba(0, 229, 255, 0.7);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+            margin-top: 60px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 8px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 20px;
+            background: linear-gradient(180deg, transparent 0%, rgba(10,10,10,0.8) 20%, rgba(10,10,10,0.9) 100%);
+        }
+
+        .section-title {
+            font-size: 48px;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 60px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: rgba(26, 26, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 229, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(181, 55, 242, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--neon-blue);
+            box-shadow: 0 10px 40px rgba(0, 229, 255, 0.3);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: var(--neon-blue);
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 20px;
+            background: rgba(10, 10, 10, 0.95);
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 229, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card.popular {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 50px rgba(181, 55, 242, 0.5);
+            transform: scale(1.05);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            color: #ffffff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 60px rgba(0, 229, 255, 0.4);
+        }
+
+        .pricing-plan {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+
+        .pricing-price {
+            font-size: 64px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .pricing-period {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 30px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .pricing-features li {
+            padding: 12px 0;
+            color: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .cta-secondary {
+            display: inline-block;
+            padding: 16px 40px;
+            background: transparent;
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .cta-secondary:hover {
+            background: var(--neon-blue);
+            color: #000000;
+            transform: translateY(-3px);
+        }
+
+        /* CTA Final */
+        .cta-final {
+            padding: 100px 20px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.95) 100%);
+        }
+
+        .cta-final h2 {
+            font-size: 56px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-final .cta-primary {
+            font-size: 24px;
+            padding: 25px 60px;
+        }
+
+        /* Contact Buttons */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 600px;
+            margin: 40px auto 0;
+        }
+
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: #ffffff;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4);
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(37, 211, 102, 0.6);
+        }
+
+        .contact-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 18px;
+        }
+
+        .contact-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .contact-name {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .contact-phone {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            .logo {
+                font-size: 60px;
+            }
+
+            .stats {
+                gap: 30px;
+            }
+
+            .stat-number {
+                font-size: 36px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .features-grid,
+            .pricing-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.popular {
+                transform: scale(1);
+            }
+
+            .cta-final h2 {
+                font-size: 32px;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(20px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="https://cdn.pixabay.com/video/2021/03/25/68978-529861058_tiny.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="video-overlay"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="logo">💈</div>
+                <h1>Revolucione Sua Barbearia<br>Com Tecnologia</h1>
+                <p class="subtitle">Sistema completo de agendamento online que aumenta seu faturamento em até 380%</p>
+                <a href="#contato" class="cta-primary">🚀 Quero Transformar Meu Negócio</a>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">+380%</div>
+                        <div class="stat-label">Aumento em Agendamentos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">-70%</div>
+                        <div class="stat-label">Redução em Faltas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Disponibilidade</div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator">↓</div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">💎 Sistema Completo Para Barbearias</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">📅</span>
+                    <h3>Agendamento Online 24/7</h3>
+                    <p>Seus clientes agendam sozinhos, a qualquer hora, de qualquer lugar. Sem telefone ocupado.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">💰</span>
+                    <h3>Aumente Seu Faturamento</h3>
+                    <p>Reduza faltas em 70% com lembretes automáticos e conquiste novos clientes com sua presença digital.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <h3>Economize Tempo</h3>
+                    <p>Pare de perder 6 horas por semana respondendo WhatsApp. Foque em atender e faturar.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3>Painel Administrativo</h3>
+                    <p>Controle total do negócio: agendamentos, serviços, comissões e relatórios em um só lugar.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🎨</span>
+                    <h3>100% Personalizável</h3>
+                    <p>Cores, textos, serviços - tudo adaptado à identidade da sua barbearia.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">📱</span>
+                    <h3>Landing Page Inclusa</h3>
+                    <p>Página profissional de alta conversão que atrai e converte novos clientes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing">
+        <div class="container">
+            <h2 class="section-title">📦 Planos Que Cabem No Seu Bolso</h2>
+            
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <div class="pricing-plan">Mensal</div>
+                    <div class="pricing-price">R$ 95</div>
+                    <div class="pricing-period">por mês</div>
+                    <ul class="pricing-features">
+                        <li>✅ Sistema Completo</li>
+                        <li>✅ Instalação em 24h</li>
+                        <li>✅ Suporte Técnico</li>
+                        <li>✅ Atualizações Ilimitadas</li>
+                        <li>✅ Landing Page</li>
+                    </ul>
+                    <a href="#contato" class="cta-secondary">Começar Agora</a>
+                </div>
+
+                <div class="pricing-card popular">
+                    <div class="pricing-badge">MAIS POPULAR</div>
+                    <div class="pricing-plan">Trimestral</div>
+                    <div class="pricing-price">R$ 260</div>
+                    <div class="pricing-period">R$ 86,63/mês • Economize 18%</div>
+                    <ul class="pricing-features">
+                        <li>✅ Sistema Completo</li>
+                        <li>✅ Instalação em 24h</li>
+                        <li>✅ Suporte Técnico</li>
+                        <li>✅ Atualizações Ilimitadas</li>
+                        <li>✅ Landing Page</li>
+                        <li>💎 Suporte Prioritário</li>
+                    </ul>
+                    <a href="#contato" class="cta-secondary">Começar Agora</a>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="pricing-plan">Anual</div>
+                    <div class="pricing-price">R$ 928</div>
+                    <div class="pricing-period">R$ 77,32/mês • Economize 35%</div>
+                    <ul class="pricing-features">
+                        <li>✅ Sistema Completo</li>
+                        <li>✅ Instalação em 24h</li>
+                        <li>✅ Suporte Técnico</li>
+                        <li>✅ Atualizações Ilimitadas</li>
+                        <li>✅ Landing Page</li>
+                        <li>💎 Suporte Prioritário</li>
+                        <li>🎁 2 Meses Grátis</li>
+                    </ul>
+                    <a href="#contato" class="cta-secondary">Começar Agora</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="cta-final" id="contato">
+        <div class="container">
+            <h2>Pronto Para Revolucionar Sua Barbearia?</h2>
+            <p class="subtitle">Fale agora com nossos especialistas pelo WhatsApp</p>
+            
+            <div class="contact-grid">
+                <a href="https://wa.me/5531993640574?text=Olá%20*Paulo%20Davi*!%20Quero%20contratar%20o%20Sistema%20BarberNeon%20para%20minha%20barbearia!" 
+                   class="contact-btn" target="_blank">
+                    <div class="contact-avatar">PD</div>
+                    <div class="contact-info">
+                        <div class="contact-name">Paulo Davi</div>
+                        <div class="contact-phone">(31) 99364-0574</div>
+                    </div>
+                </a>
+
+                <a href="https://wa.me/5531995281707?text=Olá%20*João%20Layon*!%20Quero%20contratar%20o%20Sistema%20BarberNeon%20para%20minha%20barbearia!" 
+                   class="contact-btn" target="_blank">
+                    <div class="contact-avatar">JL</div>
+                    <div class="contact-info">
+                        <div class="contact-name">João Layon</div>
+                        <div class="contact-phone">(31) 99528-1707</div>
+                    </div>
+                </a>
+            </div>
+
+            <p style="margin-top: 40px; color: rgba(255, 255, 255, 0.6); font-size: 14px;">
+                ⚡ Apenas 5 vagas disponíveis este mês • 🔒 Pagamento 100% Seguro
+            </p>
+        </div>
+    </section>
+</body>
+</html>

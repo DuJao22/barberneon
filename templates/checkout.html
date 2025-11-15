@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Finalizar Pedido - Barbearia Premium{% endblock %}
+
+{% block content %}
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="/carrinho" class="menu-btn" style="text-decoration: none;">←</a>
+            <div class="logo-container">
+                <div class="logo-text">Finalizar Pedido</div>
+            </div>
+            <div style="width: 48px;"></div>
+        </div>
+    </div>
+</header>
+
+<main class="container" style="margin-top: 20px;">
+    <div class="checkout-resumo">
+        <h3 style="margin-bottom: 16px; font-size: 18px;">📦 Resumo do Pedido</h3>
+        {% for item in itens %}
+        <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--cinza-escuro);">
+            <div>
+                <div style="font-weight: 500;">{{ item.nome }}</div>
+                {% if item.quantidade > 1 %}
+                <div style="font-size: 14px; color: var(--cinza-claro);">
+                    {{ item.quantidade }}x {{ item.preco|currency }}
+                </div>
+                {% endif %}
+            </div>
+            <div style="font-weight: 500;">{{ (item.preco * item.quantidade)|currency }}</div>
+        </div>
+        {% endfor %}
+        
+        <div class="total-carrinho" style="margin-top: 16px;">
+            <div class="total-label">Total:</div>
+            <div class="total-valor">{{ total|currency }}</div>
+        </div>
+    </div>
+
+    <div style="margin-top: 24px;">
+        <h3 style="margin-bottom: 16px; font-size: 18px;">💳 Forma de Pagamento</h3>
+        
+        <div class="payment-methods">
+            <label class="payment-option">
+                <input type="radio" name="metodo_pagamento" value="dinheiro" checked>
+                <span class="payment-label">
+                    <span class="payment-icon">💵</span>
+                    <span>Dinheiro</span>
+                </span>
+            </label>
+            
+            <label class="payment-option">
+                <input type="radio" name="metodo_pagamento" value="pix">
+                <span class="payment-label">
+                    <span class="payment-icon">📱</span>
+                    <span>PIX</span>
+                </span>
+            </label>
+            
+            <label class="payment-option">
+                <input type="radio" name="metodo_pagamento" value="cartao">
+                <span class="payment-label">
+                    <span class="payment-icon">💳</span>
+                    <span>Cartão (na retirada)</span>
+                </span>
+            </label>
+        </div>
+    </div>
+
+    <div style="margin-top: 24px;">
+        <h3 style="margin-bottom: 12px; font-size: 18px;">📝 Observações</h3>
+        <textarea id="observacoes" 
+                  placeholder="Alguma observação sobre seu pedido? (opcional)"
+                  style="width: 100%; min-height: 80px; padding: 12px; border-radius: 8px; border: 1px solid var(--cinza-escuro); background: var(--preto-profundo); color: var(--branco); font-family: inherit; resize: vertical;"></textarea>
+    </div>
+
+    <div style="margin-top: 24px; margin-bottom: 24px;">
+        <div style="padding: 16px; background: rgba(218, 165, 32, 0.1); border-radius: 8px; border-left: 4px solid var(--dourado);">
+            <p style="margin: 0; font-size: 14px; line-height: 1.6;">
+                <strong>ℹ️ Importante:</strong><br>
+                Seu pedido será enviado para confirmação. Você receberá uma notificação quando o pagamento for confirmado e poderá retirar seus produtos na barbearia.
+            </p>
+        </div>
+    </div>
+
+    <button onclick="finalizarPedido(event)" class="btn btn-primary" style="width: 100%;">
+        ✅ Confirmar Pedido
+    </button>
+</main>
+
+<script>
+function finalizarPedido(event) {
+    const metodo = document.querySelector('input[name="metodo_pagamento"]:checked').value;
+    const observacoes = document.getElementById('observacoes').value;
+    const btn = event.target;
+    
+    btn.disabled = true;
+    btn.textContent = 'Processando...';
+    
+    fetch('/finalizar-pedido', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            metodo_pagamento: metodo,
+            observacoes: observacoes
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Pedido realizado com sucesso! Aguarde a confirmação do pagamento.');
+            window.location.href = '/';
+        } else {
+            alert('Erro: ' + data.error);
+            btn.disabled = false;
+            btn.textContent = '✅ Confirmar Pedido';
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao processar pedido');
+        btn.disabled = false;
+        btn.textContent = '✅ Confirmar Pedido';
+    });
+}
+</script>
+
+<style>
+.checkout-resumo {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.payment-option {
+    display: block;
+    cursor: pointer;
+}
+
+.payment-option input[type="radio"] {
+    display: none;
+}
+
+.payment-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.payment-option input[type="radio"]:checked + .payment-label {
+    background: rgba(218, 165, 32, 0.1);
+    border-color: var(--dourado);
+}
+
+.payment-icon {
+    font-size: 24px;
+}
+
+.payment-option:hover .payment-label {
+    background: rgba(255, 255, 255, 0.08);
+}
+</style>
+{% endblock %}

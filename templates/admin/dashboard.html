@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Barbearia Premium</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <a href="/" class="menu-btn" style="text-decoration: none;">🏠</a>
+                <div class="logo-container">
+                    <div class="logo-text">Painel Administrativo</div>
+                </div>
+                <div style="width: 48px;"></div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container" style="margin-top: 20px; padding-bottom: 40px;">
+        <h1 style="font-size: 28px; color: var(--azul-neon); margin-bottom: 24px;">📊 Dashboard</h1>
+        
+        <div class="admin-stats">
+            <div class="stat-card" style="background: var(--cinza-escuro); border: 2px solid var(--azul-neon);">
+                <div class="stat-valor" style="color: var(--azul-neon);">{{ agendamentos_hoje }}</div>
+                <div class="stat-label" style="color: var(--branco);">Agendamentos Hoje</div>
+            </div>
+            <div class="stat-card" style="background: var(--cinza-escuro); border: 2px solid var(--verde-neon);">
+                <div class="stat-valor" style="color: var(--verde-neon);">{{ faturamento_hoje|currency }}</div>
+                <div class="stat-label" style="color: var(--branco);">Faturamento Hoje</div>
+            </div>
+            <div class="stat-card" style="background: var(--cinza-escuro); border: 2px solid var(--azul-neon);">
+                <div class="stat-valor" style="color: var(--azul-neon);">{{ total_clientes }}</div>
+                <div class="stat-label" style="color: var(--branco);">Total de Clientes</div>
+            </div>
+            <div class="stat-card" style="background: var(--cinza-escuro); border: 2px solid {% if produtos_baixo_estoque > 0 %}var(--vermelho-neon){% else %}var(--azul-neon){% endif %};">
+                <div class="stat-valor" style="color: {% if produtos_baixo_estoque > 0 %}var(--vermelho-neon){% else %}var(--azul-neon){% endif %};">{{ produtos_baixo_estoque }}</div>
+                <div class="stat-label" style="color: var(--branco);">Produtos com Estoque Baixo</div>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 24px 0;">
+            <a href="/admin/pedidos" class="btn btn-primary">📦 Gerenciar Pedidos</a>
+            <a href="/admin/servicos" class="btn btn-primary">✂️ Gerenciar Serviços</a>
+            <a href="/admin/produtos" class="btn btn-primary">🧴 Gerenciar Produtos</a>
+            <a href="/admin/categorias" class="btn btn-primary">📁 Gerenciar Categorias</a>
+            <a href="/admin/barbeiros" class="btn btn-primary">👨 Gerenciar Barbeiros</a>
+            <a href="/admin/configuracoes" class="btn btn-primary">⚙️ Configurações</a>
+        </div>
+        
+        <div id="notificacao-agendamento" style="display: none; position: fixed; top: 20px; right: 20px; background: var(--azul-neon); color: #000000; padding: 16px 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 200, 255, 0.5); z-index: 9999; font-weight: 700; animation: slideIn 0.3s ease;">
+            🔔 Novo agendamento recebido!
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 32px 0 16px;">
+            <h2 style="font-size: 22px; color: var(--azul-neon); margin: 0;">📅 Agendamentos{% if data_filtro %} ({{ data_filtro }}){% else %} (Todos os Próximos){% endif %}</h2>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <input type="date" id="filtro-data" value="{{ data_filtro or '' }}" 
+                       style="padding: 10px 16px; border-radius: 8px; border: 2px solid var(--azul-neon); background: var(--cinza-escuro); color: var(--branco); font-size: 14px; font-weight: 600;"
+                       onchange="filtrarPorData(this.value)">
+                <button onclick="filtrarPorData('{{ hoje }}')" class="btn btn-secondary" style="padding: 10px 20px;">Hoje</button>
+                <button onclick="limparFiltro()" class="btn btn-secondary" style="padding: 10px 20px;">Todos</button>
+            </div>
+        </div>
+        {% if agendamentos %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
+            {% for agendamento in agendamentos %}
+            <div class="agendamento-card" style="background: var(--cinza-escuro); border: 2px solid var(--azul-neon); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0, 200, 255, 0.3); transition: transform 0.2s, box-shadow 0.2s;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <div style="background: var(--azul-neon); color: #000000; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 18px;">
+                        {{ agendamento.data_hora.split(' ')[1][:5] }}
+                    </div>
+                    <div style="color: var(--verde-neon); font-weight: 700; font-size: 16px;">
+                        {{ agendamento.valor_exibir|currency }}
+                    </div>
+                </div>
+                
+                <div style="color: var(--branco); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; opacity: 0.7;">
+                    📅 {{ agendamento.data_hora.split(' ')[0] }}
+                </div>
+                
+                <div style="color: var(--azul-neon); font-size: 18px; font-weight: 700; margin-bottom: 12px;">
+                    👤 {{ agendamento.cliente_nome or 'Cliente Anônimo' }}
+                </div>
+                
+                <div style="border-top: 1px solid rgba(0, 200, 255, 0.3); padding-top: 12px; margin-top: 12px;">
+                    <div style="color: var(--branco); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                        <span style="opacity: 0.7;">✂️ Serviço:</span>
+                        <span style="font-weight: 600;">{{ agendamento.servico_nome }}</span>
+                    </div>
+                    <div style="color: var(--branco); display: flex; align-items: center; gap: 8px;">
+                        <span style="opacity: 0.7;">👨 Barbeiro:</span>
+                        <span style="font-weight: 600;">{{ agendamento.barbeiro_nome }}</span>
+                    </div>
+                </div>
+                
+                {% if agendamento.observacoes %}
+                <div style="border-top: 1px solid rgba(0, 200, 255, 0.3); padding-top: 12px; margin-top: 12px;">
+                    <div style="color: var(--branco); opacity: 0.7; font-size: 12px; margin-bottom: 4px;">📝 Observações:</div>
+                    <div style="color: var(--branco); font-size: 14px;">{{ agendamento.observacoes }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: var(--azul-neon); text-align: center; padding: 20px; background: var(--cinza-escuro); border: 2px solid var(--azul-neon); border-radius: 12px; font-weight: 600;">Nenhum agendamento encontrado</p>
+        {% endif %}
+        
+        {% if estoque_alerta %}
+        <h2 style="font-size: 22px; color: var(--vermelho-neon); margin: 32px 0 16px;">⚠️ Alertas de Estoque</h2>
+        <div style="background: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+            <table class="tabela" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #000000; border-bottom: 3px solid #FF0055;">
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Produto</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Estoque Atual</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Estoque Mínimo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto in estoque_alerta %}
+                    <tr style="border-bottom: 1px solid #E0E0E0;">
+                        <td style="color: #000000; padding: 14px 16px; font-weight: 600;">{{ produto.nome }}</td>
+                        <td style="color: #CC0000; padding: 14px 16px; font-weight: 700;">{{ produto.estoque }}</td>
+                        <td style="color: #333333; padding: 14px 16px;">{{ produto.estoque_minimo }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </main>
+
+    <script>
+    let dataFiltroAtual = '{{ data_filtro or "" }}';
+    
+    function carregarAgendamentosProcessados() {
+        try {
+            const stored = localStorage.getItem('agendamentosProcessados');
+            if (stored) {
+                const data = JSON.parse(stored);
+                const now = Date.now();
+                const fiveMinutesAgo = now - (5 * 60 * 1000);
+                
+                const filtered = data.filter(item => item.timestamp > fiveMinutesAgo);
+                localStorage.setItem('agendamentosProcessados', JSON.stringify(filtered));
+                return new Set(filtered.map(item => item.id));
+            }
+        } catch (e) {
+            console.error('Erro ao carregar agendamentos processados:', e);
+        }
+        return new Set();
+    }
+    
+    function salvarAgendamentoProcessado(id) {
+        try {
+            const stored = localStorage.getItem('agendamentosProcessados');
+            const data = stored ? JSON.parse(stored) : [];
+            data.push({ id: id, timestamp: Date.now() });
+            localStorage.setItem('agendamentosProcessados', JSON.stringify(data));
+        } catch (e) {
+            console.error('Erro ao salvar agendamento processado:', e);
+        }
+    }
+    
+    let agendamentosProcessados = carregarAgendamentosProcessados();
+    let paginaJaRecarregada = false;
+    
+    function filtrarPorData(data) {
+        window.location.href = '/admin?data=' + data;
+    }
+    
+    function limparFiltro() {
+        window.location.href = '/admin';
+    }
+    
+    function formatarDataHora(dataHora) {
+        const dt = new Date(dataHora);
+        const dia = String(dt.getDate()).padStart(2, '0');
+        const mes = String(dt.getMonth() + 1).padStart(2, '0');
+        const ano = dt.getFullYear();
+        const hora = String(dt.getHours()).padStart(2, '0');
+        const minuto = String(dt.getMinutes()).padStart(2, '0');
+        return `${dia}/${mes}/${ano} às ${hora}:${minuto}`;
+    }
+    
+    function formatarValor(valor) {
+        if (!valor) return 'R$ 0,00';
+        return 'R$ ' + parseFloat(valor).toFixed(2).replace('.', ',');
+    }
+    
+    function verificarNovosAgendamentos() {
+        fetch('/api/admin/check-novos-agendamentos')
+            .then(response => response.json())
+            .then(data => {
+                let temNovos = false;
+                
+                if (data.novos && data.novos.length > 0) {
+                    data.novos.forEach(agendamento => {
+                        if (!agendamentosProcessados.has(agendamento.id)) {
+                            mostrarNotificacaoAgendamento(agendamento);
+                            agendamentosProcessados.add(agendamento.id);
+                            salvarAgendamentoProcessado(agendamento.id);
+                            temNovos = true;
+                        }
+                    });
+                    
+                    if (temNovos && !dataFiltroAtual && !paginaJaRecarregada) {
+                        paginaJaRecarregada = true;
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 5000);
+                    }
+                }
+            })
+            .catch(error => console.error('Erro ao verificar novos agendamentos:', error));
+    }
+
+    function mostrarNotificacaoAgendamento(agendamento) {
+        const notificacao = document.getElementById('notificacao-agendamento');
+        notificacao.innerHTML = `
+            <strong style="color: var(--verde-neon); font-size: 18px;">✅ Novo Agendamento!</strong><br>
+            <div style="margin-top: 8px; line-height: 1.6;">
+                <strong>Cliente:</strong> ${agendamento.cliente_nome}<br>
+                <strong>Serviço:</strong> ${agendamento.servico_nome}<br>
+                <strong>Barbeiro:</strong> ${agendamento.barbeiro_nome}<br>
+                <strong>Data/Hora:</strong> ${formatarDataHora(agendamento.data_hora)}<br>
+                <strong>Valor:</strong> ${formatarValor(agendamento.valor)}
+            </div>
+        `;
+        notificacao.style.display = 'block';
+        
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('✂️ Novo Agendamento Recebido!', {
+                body: `${agendamento.cliente_nome} - ${agendamento.servico_nome}\n${formatarDataHora(agendamento.data_hora)}\nBarbeiro: ${agendamento.barbeiro_nome}`,
+                icon: '/static/favicon.ico',
+                badge: '/static/favicon.ico',
+                tag: 'agendamento-' + agendamento.id,
+                requireInteraction: true
+            });
+        }
+        
+        setTimeout(() => {
+            notificacao.style.display = 'none';
+        }, 8000);
+    }
+
+    if ('Notification' in window) {
+        if (Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    console.log('✅ Notificações ativadas com sucesso!');
+                }
+            });
+        } else if (Notification.permission === 'granted') {
+            console.log('✅ Notificações já estão ativadas');
+        } else {
+            console.log('⚠️ Notificações bloqueadas pelo navegador');
+        }
+    }
+
+    setInterval(verificarNovosAgendamentos, 10000);
+    verificarNovosAgendamentos();
+    </script>
+
+    <style>
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    .agendamento-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 200, 255, 0.5);
+        border-color: var(--verde-neon);
+    }
+    </style>
+</body>
+</html>
