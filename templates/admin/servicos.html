@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Serviços - Barbearia Premium</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            padding-top: 0 !important;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+        }
+
+        header {
+            position: static !important;
+            margin-bottom: 0 !important;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        main {
+            background: transparent !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 12px;
+            }
+
+            main.container {
+                padding-bottom: 24px !important;
+            }
+
+            h1 {
+                font-size: 22px !important;
+            }
+
+            .btn-primary {
+                font-size: 12px;
+                padding: 10px 16px;
+            }
+
+            .modal-content {
+                margin: 2% auto;
+                padding: 20px;
+                width: 95%;
+            }
+        }
+
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .modal-content {
+            background-color: #1a1a1a;
+            margin: 5% auto;
+            padding: 30px;
+            border: 2px solid var(--azul-neon);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover { color: var(--azul-neon); }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: var(--azul-neon);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: #0a0a0a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--azul-neon);
+            outline: none;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--azul-neon), #0066cc);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 153, 255, 0.5);
+        }
+        .btn-danger {
+            background: #cc0000;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #ff0000;
+        }
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin: 0 4px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <a href="/admin" class="menu-btn" style="text-decoration: none;">←</a>
+                <div class="logo-container">
+                    <div class="logo-text">Gerenciar Serviços</div>
+                </div>
+                <div style="width: 48px;"></div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container" style="margin-top: 20px; padding-bottom: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h1 style="font-size: 28px; color: var(--azul-neon); margin: 0;">✂️ Serviços</h1>
+            <button class="btn btn-primary" onclick="openAddModal()">+ Adicionar Serviço</button>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div style="background: {% if category == 'success' %}#00AA00{% else %}#CC0000{% endif %}; color: #fff; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% if servicos %}
+        <div style="background: #FFFFFF; border-radius: 16px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+            <table class="tabela" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #000000; border-bottom: 3px solid var(--azul-neon);">
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Nome</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Categoria</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Preço</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Duração</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Status</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: center; font-weight: 700;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for servico in servicos %}
+                    <tr style="border-bottom: 1px solid #E0E0E0;">
+                        <td style="color: #000000; padding: 14px 16px; font-weight: 600;">{{ servico.nome }}</td>
+                        <td style="color: #333333; padding: 14px 16px;">{{ servico.categoria_nome or '-' }}</td>
+                        <td style="color: #000000; padding: 14px 16px; font-weight: 600;">{{ servico.preco|currency }}</td>
+                        <td style="color: #333333; padding: 14px 16px;">{{ servico.duracao_minutos }} min</td>
+                        <td style="padding: 14px 16px;">
+                            {% if servico.ativo %}
+                            <span style="color: #00AA00; font-weight: 700;">✓ Ativo</span>
+                            {% else %}
+                            <span style="color: #CC0000; font-weight: 700;">✗ Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 14px 16px; text-align: center;">
+                            <button class="btn btn-primary btn-small" onclick='openEditModal({{ servico|tojson }})'>Editar</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteServico({{ servico.id }})">Deletar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: var(--azul-neon); text-align: center; padding: 40px; background: var(--cinza-escuro); border: 2px solid var(--azul-neon); border-radius: 12px; font-weight: 600;">Nenhum serviço cadastrado</p>
+        {% endif %}
+    </main>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddModal()">&times;</span>
+            <h2 style="color: var(--azul-neon); margin-bottom: 24px;">Adicionar Serviço</h2>
+            <form id="addForm" onsubmit="submitAdd(event)">
+                <div class="form-group">
+                    <label>Nome *</label>
+                    <input type="text" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea name="descricao" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select name="categoria_id">
+                        <option value="">Sem categoria</option>
+                        {% for cat in categorias %}
+                        <option value="{{ cat.id }}">{{ cat.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Preço (R$) *</label>
+                    <input type="number" name="preco" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Duração (minutos)</label>
+                    <input type="number" name="duracao" min="1" value="30">
+                </div>
+                <div class="form-group">
+                    <label>URL da Imagem</label>
+                    <input type="text" name="imagem" placeholder="https://exemplo.com/imagem.jpg">
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="ativo" value="1" id="add_ativo" checked>
+                        <label for="add_ativo" style="margin: 0;">Ativo</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Adicionar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2 style="color: var(--azul-neon); margin-bottom: 24px;">Editar Serviço</h2>
+            <form id="editForm" onsubmit="submitEdit(event)">
+                <input type="hidden" name="id" id="edit_id">
+                <div class="form-group">
+                    <label>Nome *</label>
+                    <input type="text" name="nome" id="edit_nome" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea name="descricao" id="edit_descricao" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select name="categoria_id" id="edit_categoria_id">
+                        <option value="">Sem categoria</option>
+                        {% for cat in categorias %}
+                        <option value="{{ cat.id }}">{{ cat.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Preço (R$) *</label>
+                    <input type="number" name="preco" id="edit_preco" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Duração (minutos)</label>
+                    <input type="number" name="duracao" id="edit_duracao" min="1">
+                </div>
+                <div class="form-group">
+                    <label>URL da Imagem</label>
+                    <input type="text" name="imagem" id="edit_imagem" placeholder="https://exemplo.com/imagem.jpg">
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="ativo" value="1" id="edit_ativo">
+                        <label for="edit_ativo" style="margin: 0;">Ativo</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAddModal() {
+            document.getElementById('addModal').style.display = 'block';
+        }
+        function closeAddModal() {
+            document.getElementById('addModal').style.display = 'none';
+            document.getElementById('addForm').reset();
+        }
+        function openEditModal(servico) {
+            document.getElementById('edit_id').value = servico.id;
+            document.getElementById('edit_nome').value = servico.nome;
+            document.getElementById('edit_descricao').value = servico.descricao || '';
+            document.getElementById('edit_categoria_id').value = servico.categoria_id || '';
+            document.getElementById('edit_preco').value = servico.preco;
+            document.getElementById('edit_duracao').value = servico.duracao_minutos;
+            document.getElementById('edit_imagem').value = servico.imagem || '';
+            document.getElementById('edit_ativo').checked = servico.ativo;
+            document.getElementById('editModal').style.display = 'block';
+        }
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+        function submitAdd(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            fetch('/admin/api/servicos', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Erro: ' + data.message);
+                }
+            });
+        }
+        function submitEdit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const id = document.getElementById('edit_id').value;
+            fetch('/admin/api/servicos/' + id, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Erro: ' + data.message);
+                }
+            });
+        }
+        function deleteServico(id) {
+            if (confirm('Tem certeza que deseja deletar este serviço?')) {
+                fetch('/admin/api/servicos/' + id + '/deletar', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Erro: ' + data.message);
+                    }
+                });
+            }
+        }
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                closeAddModal();
+                closeEditModal();
+            }
+        }
+    </script>
+</body>
+</html>

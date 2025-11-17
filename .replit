@@ -1,0 +1,47 @@
+modules = ["web", "nodejs-20", "postgresql-16", "python-3.11"]
+[agent]
+expertMode = true
+integrations = ["github:1.0.0"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "flask-app"
+
+[[workflows.workflow]]
+name = "flask-app"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "gunicorn app:app --bind 0.0.0.0:5000 --workers 2 --timeout 120 --reload"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 37759
+externalPort = 3001
+
+[[ports]]
+localPort = 44793
+externalPort = 3000
+
+[[ports]]
+localPort = 46535
+externalPort = 3002
+
+[nix]
+channel = "stable-25_05"

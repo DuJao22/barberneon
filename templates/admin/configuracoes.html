@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - Painel Administrativo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            padding-top: 0 !important;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+        }
+
+        header {
+            position: static !important;
+            margin-bottom: 0 !important;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        main {
+            background: transparent !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 12px;
+            }
+
+            main.container {
+                padding-bottom: 24px !important;
+            }
+
+            h1 {
+                font-size: 22px !important;
+            }
+
+            h2 {
+                font-size: 18px !important;
+            }
+
+            form {
+                padding: 16px !important;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 14px !important;
+                padding: 10px 14px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <a href="/admin" class="menu-btn" style="text-decoration: none;">🏠</a>
+                <div class="logo-container">
+                    <div class="logo-text">Configurações do Sistema</div>
+                </div>
+                <div style="width: 48px;"></div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container" style="margin-top: 20px; padding-bottom: 40px;">
+        <h1 style="font-size: 28px; color: var(--azul-neon); margin-bottom: 24px;">⚙️ Configurações Gerais</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div style="padding: 12px 20px; border-radius: 12px; margin-bottom: 20px; {% if category == 'success' %}background: rgba(0, 255, 136, 0.1); border: 2px solid var(--verde-neon); color: var(--verde-neon);{% else %}background: rgba(255, 0, 85, 0.1); border: 2px solid var(--vermelho-neon); color: var(--vermelho-neon);{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" style="background: #FFFFFF; padding: 24px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
+            <h2 style="font-size: 20px; color: var(--azul-neon); margin-bottom: 20px; border-bottom: 2px solid #F0F0F0; padding-bottom: 12px;">📱 Informações Básicas</h2>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Nome da Barbearia</label>
+                <input type="text" name="nome_barbearia" value="{{ configs.get('nome_barbearia', '') }}" required 
+                       style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Logo (Emoji ou Ícone)</label>
+                <input type="text" name="logo_emoji" value="{{ configs.get('logo_emoji', '💈') }}" maxlength="10"
+                       style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+                <small style="color: #666666; font-size: 12px;">Use um emoji ou ícone</small>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">URL da Logo (Imagem)</label>
+                <input type="url" name="logo_url" value="{{ configs.get('logo_url', '') }}" placeholder="https://exemplo.com/logo.png"
+                       style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+                <small style="color: #666666; font-size: 12px;">URL completa da imagem da logo (opcional, substitui o emoji se fornecida)</small>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Descrição</label>
+                <textarea name="descricao" rows="3"
+                          style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">{{ configs.get('descricao', '') }}</textarea>
+            </div>
+            
+            <h2 style="font-size: 20px; color: var(--azul-neon); margin: 32px 0 20px; border-bottom: 2px solid #F0F0F0; padding-bottom: 12px;">⏰ Horário de Funcionamento</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Abertura</label>
+                    <input type="time" name="horario_abertura" value="{{ configs.get('horario_abertura', '09:00') }}" required
+                           style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Fechamento</label>
+                    <input type="time" name="horario_fechamento" value="{{ configs.get('horario_fechamento', '20:00') }}" required
+                           style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Tempo médio de atendimento (minutos)</label>
+                <input type="number" name="tempo_atendimento" value="{{ configs.get('tempo_atendimento', '30') }}" min="15" max="120"
+                       style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Dias de Funcionamento</label>
+                <input type="text" name="dias_funcionamento" value="{{ configs.get('dias_funcionamento', '1,2,3,4,5,6') }}" placeholder="1,2,3,4,5,6"
+                       style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+                <small style="color: #666666; font-size: 12px;">Dias da semana separados por vírgula (1=Segunda, 2=Terça... 7=Domingo)</small>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Status da Barbearia</label>
+                <select name="status_aberto" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+                    <option value="1" {% if configs.get('status_aberto', '1') == '1' %}selected{% endif %}>Aberto</option>
+                    <option value="0" {% if configs.get('status_aberto', '1') == '0' %}selected{% endif %}>Fechado</option>
+                </select>
+                <small style="color: #666666; font-size: 12px;">Controle se a barbearia está aberta ou fechada</small>
+            </div>
+            
+            <h2 style="font-size: 20px; color: var(--azul-neon); margin: 32px 0 20px; border-bottom: 2px solid #F0F0F0; padding-bottom: 12px;">📞 Contato</h2>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Telefone</label>
+                <input type="text" name="telefone" value="{{ configs.get('telefone', '') }}" placeholder="(11) 3456-7890"
+                       style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">WhatsApp</label>
+                <input type="text" name="whatsapp" value="{{ configs.get('whatsapp', '') }}" placeholder="(11) 98765-4321"
+                       style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">E-mail</label>
+                <input type="email" name="email" value="{{ configs.get('email', '') }}" placeholder="contato@barbearia.com"
+                       style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+            </div>
+            
+            <h2 style="font-size: 20px; color: var(--azul-neon); margin: 32px 0 20px; border-bottom: 2px solid #F0F0F0; padding-bottom: 12px;">📍 Endereço</h2>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Endereço Completo</label>
+                <input type="text" name="endereco" value="{{ configs.get('endereco', '') }}" placeholder="Rua da Barbearia, 123"
+                       style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Cidade</label>
+                    <input type="text" name="cidade" value="{{ configs.get('cidade', '') }}" placeholder="São Paulo"
+                           style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Estado</label>
+                    <input type="text" name="estado" value="{{ configs.get('estado', '') }}" placeholder="SP" maxlength="2"
+                           style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">CEP</label>
+                    <input type="text" name="cep" value="{{ configs.get('cep', '') }}" placeholder="01234-567"
+                           style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+                </div>
+            </div>
+            
+            <h2 style="font-size: 20px; color: var(--azul-neon); margin: 32px 0 20px; border-bottom: 2px solid #F0F0F0; padding-bottom: 12px;">📱 Redes Sociais</h2>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Instagram</label>
+                <input type="text" name="instagram" value="{{ configs.get('instagram', '') }}" placeholder="@barbeariapremuim"
+                       style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Facebook</label>
+                <input type="text" name="facebook" value="{{ configs.get('facebook', '') }}" placeholder="BarbeariaPremium"
+                       style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+            </div>
+            
+            <h2 style="font-size: 20px; color: var(--azul-neon); margin: 32px 0 20px; border-bottom: 2px solid #F0F0F0; padding-bottom: 12px;">💳 Pagamentos Online (Mercado Pago)</h2>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--azul-neon); font-weight: 600;">Ativar Mercado Pago</label>
+                <select name="mercadopago_ativo" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #E0E0E0; background: #FFFFFF; color: #000000; font-size: 15px;">
+                    <option value="0" {% if configs.get('mercadopago_ativo', '0') == '0' %}selected{% endif %}>Desativado</option>
+                    <option value="1" {% if configs.get('mercadopago_ativo', '0') == '1' %}selected{% endif %}>Ativado</option>
+                </select>
+                <small style="color: #666666; font-size: 12px;">
+                    {% if mercadopago_configured %}
+                        ✅ Chaves do Mercado Pago configuradas
+                    {% else %}
+                        ⚠️ Configure as chaves MERCADOPAGO_ACCESS_TOKEN e MERCADOPAGO_PUBLIC_KEY nas variáveis de ambiente (Secrets)
+                    {% endif %}
+                </small>
+            </div>
+            
+            <div style="margin-top: 32px;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; background: #00D9FF; color: #000000; font-size: 16px;">
+                    💾 Salvar Configurações
+                </button>
+            </div>
+        </form>
+        
+        <div style="margin-top: 24px; text-align: center;">
+            <a href="/admin" style="color: #00D9FF; text-decoration: none; font-weight: 600;">← Voltar ao Painel</a>
+        </div>
+    </main>
+</body>
+</html>

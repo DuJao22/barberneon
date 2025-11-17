@@ -1,0 +1,30 @@
+{% macro produto_card(item, tipo='produto') %}
+<a href="/{{ 'servico' if tipo == 'servico' else 'produto' }}/{{ item.id }}" class="produto-card">
+    {% if item.promocao %}
+    <div class="badge-promocao">OFERTA</div>
+    {% endif %}
+    
+    <div class="produto-imagem {{ 'produto-imagem--fallback' if not item.imagem }}">
+        {% if item.imagem %}
+        <img src="{{ url_for('static', filename='images/' ~ item.imagem) }}" alt="{{ item.nome }}" loading="lazy">
+        {% else %}
+        <span class="emoji-fallback">{{ '✂️' if tipo == 'servico' else '🧴' }}</span>
+        {% endif %}
+    </div>
+    
+    <div class="produto-info">
+        <div class="produto-nome">{{ item.nome }}</div>
+        <div>
+            {% if item.promocao and item.preco_promocional %}
+            <span class="preco-antigo">{{ item.preco|currency }}</span>
+            <div class="produto-preco">{{ item.preco_promocional|currency }}</div>
+            {% else %}
+            {% if tipo == 'servico' %}
+            <span class="a-partir">a partir de</span>
+            {% endif %}
+            <div class="produto-preco">{{ item.preco|currency }}</div>
+            {% endif %}
+        </div>
+    </div>
+</a>
+{% endmacro %}

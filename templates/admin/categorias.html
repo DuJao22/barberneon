@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Categorias - Barbearia Premium</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            padding-top: 0 !important;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+        }
+
+        header {
+            position: static !important;
+            margin-bottom: 0 !important;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        main {
+            background: transparent !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 12px;
+            }
+
+            main.container {
+                padding-bottom: 24px !important;
+            }
+
+            h1 {
+                font-size: 22px !important;
+            }
+
+            .btn-primary {
+                font-size: 12px;
+                padding: 10px 16px;
+            }
+
+            .modal-content {
+                margin: 2% auto;
+                padding: 20px;
+                width: 95%;
+            }
+        }
+
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .modal-content {
+            background-color: #1a1a1a;
+            margin: 5% auto;
+            padding: 30px;
+            border: 2px solid var(--azul-neon);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover { color: var(--azul-neon); }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: var(--azul-neon);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: #0a0a0a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--azul-neon);
+            outline: none;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--azul-neon), #0066cc);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 153, 255, 0.5);
+        }
+        .btn-danger {
+            background: #cc0000;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #ff0000;
+        }
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin: 0 4px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <a href="/admin" class="menu-btn" style="text-decoration: none;">←</a>
+                <div class="logo-container">
+                    <div class="logo-text">Gerenciar Categorias</div>
+                </div>
+                <div style="width: 48px;"></div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container" style="margin-top: 20px; padding-bottom: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h1 style="font-size: 28px; color: var(--azul-neon); margin: 0;">📁 Categorias</h1>
+            <button class="btn btn-primary" onclick="openAddModal()">+ Adicionar Categoria</button>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div style="background: {% if category == 'success' %}#00AA00{% else %}#CC0000{% endif %}; color: #fff; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% if categorias %}
+        <div style="background: #FFFFFF; border-radius: 16px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+            <table class="tabela" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #000000; border-bottom: 3px solid var(--azul-neon);">
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Nome</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Tipo</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Ícone</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Status</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: center; font-weight: 700;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for categoria in categorias %}
+                    <tr style="border-bottom: 1px solid #E0E0E0;">
+                        <td style="color: #000000; padding: 14px 16px; font-weight: 600;">{{ categoria.nome }}</td>
+                        <td style="color: #333333; padding: 14px 16px;">
+                            {% if categoria.tipo == 'servico' %}
+                            <span style="background: #E3F2FD; color: #1976D2; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">Serviço</span>
+                            {% elif categoria.tipo == 'produto' %}
+                            <span style="background: #E8F5E9; color: #388E3C; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">Produto</span>
+                            {% else %}
+                            <span style="background: #FFF3E0; color: #F57C00; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">Ambos</span>
+                            {% endif %}
+                        </td>
+                        <td style="color: #333333; padding: 14px 16px; font-size: 20px;">{{ categoria.icone or '-' }}</td>
+                        <td style="padding: 14px 16px;">
+                            {% if categoria.ativo %}
+                            <span style="color: #00AA00; font-weight: 700;">✓ Ativo</span>
+                            {% else %}
+                            <span style="color: #CC0000; font-weight: 700;">✗ Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 14px 16px; text-align: center;">
+                            <button class="btn btn-primary btn-small" onclick='openEditModal({{ categoria|tojson }})'>Editar</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteCategoria({{ categoria.id }})">Deletar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: var(--azul-neon); text-align: center; padding: 40px; background: var(--cinza-escuro); border: 2px solid var(--azul-neon); border-radius: 12px; font-weight: 600;">Nenhuma categoria cadastrada</p>
+        {% endif %}
+    </main>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddModal()">&times;</span>
+            <h2 style="color: var(--azul-neon); margin-bottom: 24px;">Adicionar Categoria</h2>
+            <form id="addForm" onsubmit="submitAdd(event)">
+                <div class="form-group">
+                    <label>Nome *</label>
+                    <input type="text" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea name="descricao" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select name="tipo">
+                        <option value="produto">Produto</option>
+                        <option value="servico">Serviço</option>
+                        <option value="ambos">Ambos</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ícone (emoji)</label>
+                    <input type="text" name="icone" placeholder="🔥">
+                    <small style="color: #888; font-size: 12px; display: block; margin-top: 4px;">Copie um emoji do seu teclado ou de sites como emojipedia.org</small>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="ativo" value="1" id="add_ativo" checked>
+                        <label for="add_ativo" style="margin: 0;">Ativo</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Adicionar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2 style="color: var(--azul-neon); margin-bottom: 24px;">Editar Categoria</h2>
+            <form id="editForm" onsubmit="submitEdit(event)">
+                <input type="hidden" name="id" id="edit_id">
+                <div class="form-group">
+                    <label>Nome *</label>
+                    <input type="text" name="nome" id="edit_nome" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea name="descricao" id="edit_descricao" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select name="tipo" id="edit_tipo">
+                        <option value="produto">Produto</option>
+                        <option value="servico">Serviço</option>
+                        <option value="ambos">Ambos</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ícone (emoji)</label>
+                    <input type="text" name="icone" id="edit_icone" placeholder="🔥">
+                    <small style="color: #888; font-size: 12px; display: block; margin-top: 4px;">Copie um emoji do seu teclado ou de sites como emojipedia.org</small>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="ativo" value="1" id="edit_ativo">
+                        <label for="edit_ativo" style="margin: 0;">Ativo</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAddModal() {
+            document.getElementById('addModal').style.display = 'block';
+        }
+        function closeAddModal() {
+            document.getElementById('addModal').style.display = 'none';
+            document.getElementById('addForm').reset();
+        }
+        function openEditModal(categoria) {
+            document.getElementById('edit_id').value = categoria.id;
+            document.getElementById('edit_nome').value = categoria.nome;
+            document.getElementById('edit_descricao').value = categoria.descricao || '';
+            document.getElementById('edit_tipo').value = categoria.tipo || 'produto';
+            document.getElementById('edit_icone').value = categoria.icone || '';
+            document.getElementById('edit_ativo').checked = categoria.ativo;
+            document.getElementById('editModal').style.display = 'block';
+        }
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+        function submitAdd(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            fetch('/admin/api/categorias', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Erro: ' + data.message);
+                }
+            });
+        }
+        function submitEdit(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const id = document.getElementById('edit_id').value;
+            fetch('/admin/api/categorias/' + id, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Erro: ' + data.message);
+                }
+            });
+        }
+        function deleteCategoria(id) {
+            if (confirm('Tem certeza que deseja deletar esta categoria?')) {
+                fetch('/admin/api/categorias/' + id + '/deletar', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Erro: ' + data.message);
+                    }
+                });
+            }
+        }
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                closeAddModal();
+                closeEditModal();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastro Cliente - Barbearia Premium{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <button class="menu-btn" onclick="window.history.back()">←</button>
+                <div class="logo-container">
+                    <div class="logo">💈</div>
+                    <div class="logo-text">Barbearia Premium</div>
+                </div>
+                <div style="width: 48px;"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>Criar Conta</h1>
+                <p>Cadastre-se para agendar seus cortes</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/cadastro-cliente" class="auth-form">
+                <div class="form-group">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required minlength="3" autocomplete="name">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone">Telefone</label>
+                    <input type="tel" id="telefone" name="telefone" placeholder="(11) 98765-4321" required autocomplete="tel">
+                    <small style="color: var(--cinza-claro); font-size: 12px; margin-top: 4px; display: block;">Este será seu telefone de login (único e exclusivo)</small>
+                </div>
+
+                <button type="submit" class="btn-primary">Criar Conta</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Já tem uma conta?</p>
+                <a href="/login-cliente" class="link-secondary">Fazer login</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+body {
+    background-color: #FFFFFF !important;
+    padding-top: 140px !important;
+}
+
+header {
+    background-color: #000000 !important;
+    border-radius: 0 !important;
+}
+
+.auth-page {
+    min-height: 100vh;
+    background-color: #FFFFFF;
+}
+
+.auth-container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.auth-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #000000;
+}
+
+.auth-header p {
+    font-size: 14px;
+    color: #666666;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.auth-form {
+    width: 100%;
+    background: #FFFFFF;
+    border: none;
+    padding: 0;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    color: #000000;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #E5E5E5;
+    background: #FFFFFF;
+    color: #000000;
+    font-size: 15px;
+    font-weight: 400;
+    transition: all 0.3s ease;
+}
+
+.form-group input::placeholder {
+    color: #999999;
+    font-weight: 400;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #00E5FF;
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+}
+
+.form-group small {
+    color: #999999 !important;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: #00E5FF;
+    border: none;
+    border-radius: 12px;
+    color: #000000;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 12px;
+}
+
+.btn-primary:hover {
+    background: #00D4EE;
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 32px;
+}
+
+.auth-footer p {
+    font-size: 14px;
+    color: #000000;
+    margin-bottom: 8px;
+    font-weight: 400;
+}
+
+.link-secondary {
+    color: #00E5FF;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.link-secondary:hover {
+    color: #00B8E6;
+}
+
+.alert {
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.alert-error {
+    background: #FFF5F5;
+    border: 1px solid #FF6B6B;
+    color: #D63031;
+}
+
+.alert-success {
+    background: #F0FFF4;
+    border: 1px solid #68D391;
+    color: #2F855A;
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 24px 16px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                setTimeout(function() {
+                    if (typeof restaurarCarrinhoLocalStorage === 'function') {
+                        restaurarCarrinhoLocalStorage();
+                    }
+                }, 500);
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+});
+</script>
+{% endblock %}

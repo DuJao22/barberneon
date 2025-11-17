@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico - Barbearia Premium{% endblock %}
+
+{% block content %}
+<style>
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 12px;
+        }
+
+        main.container {
+            margin-top: 16px !important;
+        }
+
+        h2 {
+            font-size: 18px !important;
+        }
+
+        .carrinho-item {
+            margin-bottom: 12px !important;
+        }
+
+        .carrinho-item > div {
+            padding: 14px !important;
+        }
+
+        .carrinho-item-nome {
+            font-size: 15px !important;
+        }
+
+        .carrinho-item-preco {
+            font-size: 16px !important;
+        }
+
+        .btn {
+            font-size: 14px;
+            padding: 12px 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        h2 {
+            font-size: 16px !important;
+        }
+
+        .carrinho-item-nome {
+            font-size: 14px !important;
+        }
+    }
+</style>
+
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="/" class="menu-btn" style="text-decoration: none;">←</a>
+            <div class="logo-container">
+                <div class="logo-text">Meu Histórico</div>
+            </div>
+            <div style="width: 48px;"></div>
+        </div>
+    </div>
+</header>
+
+<main class="container" style="margin-top: 20px;">
+    {% if not session.get('cliente_id') %}
+    <div style="text-align: center; padding: 60px 20px;">
+        <div style="font-size: 80px; margin-bottom: 20px; opacity: 0.3;">🔐</div>
+        <h2 style="font-size: 24px; margin-bottom: 12px;">Faça Login</h2>
+        <p style="color: var(--cinza-claro); margin-bottom: 24px;">Entre para ver seu histórico</p>
+        <a href="/login-cliente" class="btn btn-primary">Fazer Login</a>
+    </div>
+    {% else %}
+        {% if pedidos or agendamentos %}
+            {% if pedidos %}
+            <div style="margin-bottom: 32px;">
+                <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px; color: var(--azul-neon);">
+                    🛒 Minhas Compras
+                </h2>
+                
+                {% for item in pedidos %}
+                <div class="carrinho-item" style="margin-bottom: 16px;">
+                    <div style="padding: 16px; width: 100%;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                            <div>
+                                <div style="font-size: 14px; font-weight: 700; margin-bottom: 4px;">
+                                    Pedido #{{ item.pedido.id }}
+                                </div>
+                                <div style="font-size: 12px; color: var(--cinza-claro);">
+                                    {{ item.pedido.data_criacao|datetime_format }}
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 16px; font-weight: 700; color: var(--azul-neon);">
+                                    {{ item.pedido.valor_total|currency }}
+                                </div>
+                                {% if item.pedido.status == 'aguardando_confirmacao' %}
+                                <span style="background: #FFA500; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-top: 4px; display: inline-block;">
+                                    Aguardando
+                                </span>
+                                {% elif item.pedido.status == 'pago' %}
+                                <span style="background: #00E676; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-top: 4px; display: inline-block;">
+                                    Pago
+                                </span>
+                                {% elif item.pedido.status == 'cancelado' %}
+                                <span style="background: #FF3D00; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-top: 4px; display: inline-block;">
+                                    Cancelado
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div style="border-top: 1px solid #E0E0E0; padding-top: 12px;">
+                            {% for produto in item.itens %}
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
+                                <div>
+                                    <span style="color: var(--cinza-claro);">{{ produto.quantidade }}x</span>
+                                    {{ produto.nome }}
+                                </div>
+                                <div style="font-weight: 600;">
+                                    {{ produto.valor_total|currency }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if item.pedido.metodo_pagamento %}
+                        <div style="border-top: 1px solid #E0E0E0; padding-top: 12px; margin-top: 8px; font-size: 12px; color: var(--cinza-claro);">
+                            💳 {{ item.pedido.metodo_pagamento|title }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if agendamentos %}
+            <div style="margin-bottom: 32px;">
+                <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px; color: var(--azul-neon);">
+                    ✂️ Meus Agendamentos
+                </h2>
+                
+                {% for agendamento in agendamentos %}
+                <div class="carrinho-item" style="margin-bottom: 16px;">
+                    <div class="carrinho-item-imagem">
+                        ✂️
+                    </div>
+                    <div class="carrinho-item-info">
+                        <div class="carrinho-item-nome">{{ agendamento.servico_nome }}</div>
+                        <div style="font-size: 14px; color: var(--cinza-claro); margin-top: 4px;">
+                            👤 {{ agendamento.barbeiro_nome }}
+                        </div>
+                        <div style="font-size: 14px; color: var(--cinza-claro); margin-top: 4px;">
+                            📅 {{ agendamento.data_hora|datetime_format }}
+                        </div>
+                        <div class="carrinho-item-preco">{{ agendamento.valor|currency }}</div>
+                        {% if agendamento.status == 'agendado' %}
+                        <span style="background: #00E676; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-top: 8px; display: inline-block;">
+                            Agendado
+                        </span>
+                        {% elif agendamento.status == 'concluido' %}
+                        <span style="background: var(--azul-neon); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-top: 8px; display: inline-block;">
+                            Concluído
+                        </span>
+                        {% elif agendamento.status == 'cancelado' %}
+                        <span style="background: #FF3D00; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-top: 8px; display: inline-block;">
+                            Cancelado
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div style="text-align: center; margin-top: 32px;">
+                <a href="/" class="btn btn-secondary">Voltar ao Início</a>
+            </div>
+        {% else %}
+        <div style="text-align: center; padding: 60px 20px;">
+            <div style="font-size: 80px; margin-bottom: 20px; opacity: 0.3;">📋</div>
+            <h2 style="font-size: 24px; margin-bottom: 12px;">Nenhum Histórico</h2>
+            <p style="color: var(--cinza-claro); margin-bottom: 24px;">Você ainda não fez nenhuma compra ou agendamento</p>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a href="/agendamento" class="btn btn-primary">Fazer Agendamento</a>
+                <a href="/" class="btn btn-secondary">Explorar Produtos</a>
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+</main>
+{% endblock %}

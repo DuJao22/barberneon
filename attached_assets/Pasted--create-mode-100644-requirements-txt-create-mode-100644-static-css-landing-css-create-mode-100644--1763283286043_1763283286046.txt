@@ -1,0 +1,153 @@
+ create mode 100644 requirements.txt
+ create mode 100644 static/css/landing.css
+ create mode 100644 static/css/style.css
+ create mode 100644 static/images/barber_shop_t-shirt__3529e31e.jpg
+ create mode 100644 static/images/barber_shop_t-shirt__507b9da7.jpg
+ create mode 100644 static/images/barber_shop_t-shirt__5604e2c9.jpg
+ create mode 100644 static/images/beard_oil_grooming_p_6725df69.jpg
+ create mode 100644 static/images/beard_oil_grooming_p_ada81a45.jpg
+ create mode 100644 static/images/hair_pomade_wax_styl_9e2c9901.jpg
+ create mode 100644 static/images/hair_pomade_wax_styl_b769f3e8.jpg
+ create mode 100644 static/images/mens_cologne_perfume_2c979206.jpg
+ create mode 100644 static/images/mens_cologne_perfume_b871a26c.jpg
+ create mode 100644 static/images/mens_cologne_perfume_da8380dc.jpg
+ create mode 100644 static/images/stylish_baseball_cap_4c4d0116.jpg
+ create mode 100644 static/images/stylish_baseball_cap_9bcfdbcd.jpg
+ create mode 100644 static/images/stylish_baseball_cap_dfb98c02.jpg
+ create mode 100644 static/js/app.js
+ create mode 100644 templates/_components.html
+ create mode 100644 templates/admin/barbeiros.html
+ create mode 100644 templates/admin/categorias.html
+ create mode 100644 templates/admin/configuracoes.html
+ create mode 100644 templates/admin/dashboard.html
+ create mode 100644 templates/admin/login.html
+ create mode 100644 templates/admin/pedidos.html
+ create mode 100644 templates/admin/produtos.html
+ create mode 100644 templates/admin/servicos.html
+ create mode 100644 templates/agendamento.html
+ create mode 100644 templates/base.html
+ create mode 100644 templates/buscar.html
+ create mode 100644 templates/cadastro-cliente.html
+ create mode 100644 templates/cadastro.html
+ create mode 100644 templates/carrinho.html
+ create mode 100644 templates/categoria.html
+ create mode 100644 templates/checkout.html
+ create mode 100644 templates/contato.html
+ create mode 100644 templates/historico.html
+ create mode 100644 templates/index.html
+ create mode 100644 templates/landing-video.html
+ create mode 100644 templates/landing.html
+ create mode 100644 templates/login-admin.html
+ create mode 100644 templates/login-cliente.html
+ create mode 100644 templates/login.html
+ create mode 100644 templates/perfil.html
+ create mode 100644 templates/produto.html
+ create mode 100644 templates/servico.html
+Deleted branch main (was 293dc65).
+remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/DuJao22/barberneon/'
+~/workspace$ git push
+fatal: The current branch main has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin main
+
+To have this happen automatically for branches without a tracking
+upstream, see 'push.autoSetupRemote' in 'git help config'.
+
+~/workspace$ git push origin main
+remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/DuJao22/barberneon/'
+~/workspace$ git push origin main
+remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/DuJao22/barberneon/'
+~/workspace$ git checkout --orphan novo-main && git add -A && git commit -m "Sistema completo de gestão para barbearia - Barbearia Premium" && git branch -D main && git branch -m main && git push -f origin main
+Switched to a new branch 'novo-main'
+[novo-main (root-commit) b3c9e0a] Sistema completo de gestão para barbearia - Barbearia Premium
+ 83 files changed, 13886 insertions(+)
+ create mode 100644 .env.example
+ create mode 100644 .gitignore
+ create mode 100644 .replit
+ create mode 100644 Procfile
+ create mode 100644 README.md
+ create mode 100644 app.py
+ create mode 100644 attached_assets/Pasted--workspace-git-checkout-orphan-novo-main-git-add-A-git-commit-m-Sistema-completo-de-ges-1763280783323_1763280783328.txt
+ create mode 100644 attached_assets/Pasted--workspace-git-checkout-orphan-novo-main-git-add-A-git-commit-m-Sistema-completo-de-ges-1763282958172_1763282958180.txt
+ create mode 100644 attached_assets/Screenshot 2025-11-16 03.45.43_1763275584737.png
+ create mode 100644 attached_assets/Screenshot_20251115_014328_Chrome_1763181884072.jpg
+ create mode 100644 attached_assets/image_1763143636176.png
+ create mode 100644 attached_assets/image_1763144347909.png
+ create mode 100644 attached_assets/image_1763144552140.png
+ create mode 100644 attached_assets/image_1763145045819.png
+ create mode 100644 attached_assets/image_1763145131908.png
+ create mode 100644 attached_assets/image_1763234151677.png
+ create mode 100644 attached_assets/image_1763234309402.png
+ create mode 100644 attached_assets/image_1763275752776.png
+ create mode 100644 attached_assets/image_1763276097324.png
+ create mode 100644 attached_assets/image_1763276220055.png
+ create mode 100644 attached_assets/image_1763276347706.png
+ create mode 100644 attached_assets/image_1763276434290.png
+ create mode 100644 attached_assets/image_1763276543327.png
+ create mode 100644 attached_assets/image_1763276718820.png
+ create mode 100644 attached_assets/image_1763277101228.png
+ create mode 100644 attached_assets/image_1763277815052.png
+ create mode 100644 attached_assets/image_1763278777866.png
+ create mode 100644 attached_assets/image_1763278932677.png
+ create mode 100644 attached_assets/image_1763279053586.png
+ create mode 100644 attached_assets/image_1763279180186.png
+ create mode 100644 attached_assets/image_1763279834259.png
+ create mode 100644 attached_assets/image_1763282688312.png
+ create mode 100644 attached_assets/image_1763282718135.png
+ create mode 100644 attached_assets/targeted_element_1763277211460.png
+ create mode 100644 database.db
+ create mode 100644 database.py
+ create mode 100644 database/barbearia.db
+ create mode 100644 replit.md
+ create mode 100644 requirements.txt
+ create mode 100644 static/css/landing.css
+ create mode 100644 static/css/style.css
+ create mode 100644 static/images/barber_shop_t-shirt__3529e31e.jpg
+ create mode 100644 static/images/barber_shop_t-shirt__507b9da7.jpg
+ create mode 100644 static/images/barber_shop_t-shirt__5604e2c9.jpg
+ create mode 100644 static/images/beard_oil_grooming_p_6725df69.jpg
+ create mode 100644 static/images/beard_oil_grooming_p_ada81a45.jpg
+ create mode 100644 static/images/hair_pomade_wax_styl_9e2c9901.jpg
+ create mode 100644 static/images/hair_pomade_wax_styl_b769f3e8.jpg
+ create mode 100644 static/images/mens_cologne_perfume_2c979206.jpg
+ create mode 100644 static/images/mens_cologne_perfume_b871a26c.jpg
+ create mode 100644 static/images/mens_cologne_perfume_da8380dc.jpg
+ create mode 100644 static/images/stylish_baseball_cap_4c4d0116.jpg
+ create mode 100644 static/images/stylish_baseball_cap_9bcfdbcd.jpg
+ create mode 100644 static/images/stylish_baseball_cap_dfb98c02.jpg
+ create mode 100644 static/js/app.js
+ create mode 100644 templates/_components.html
+ create mode 100644 templates/admin/barbeiros.html
+ create mode 100644 templates/admin/categorias.html
+ create mode 100644 templates/admin/configuracoes.html
+ create mode 100644 templates/admin/dashboard.html
+ create mode 100644 templates/admin/login.html
+ create mode 100644 templates/admin/pedidos.html
+ create mode 100644 templates/admin/produtos.html
+ create mode 100644 templates/admin/servicos.html
+ create mode 100644 templates/agendamento.html
+ create mode 100644 templates/base.html
+ create mode 100644 templates/buscar.html
+ create mode 100644 templates/cadastro-cliente.html
+ create mode 100644 templates/cadastro.html
+ create mode 100644 templates/carrinho.html
+ create mode 100644 templates/categoria.html
+ create mode 100644 templates/checkout.html
+ create mode 100644 templates/contato.html
+ create mode 100644 templates/historico.html
+ create mode 100644 templates/index.html
+ create mode 100644 templates/landing-video.html
+ create mode 100644 templates/landing.html
+ create mode 100644 templates/login-admin.html
+ create mode 100644 templates/login-cliente.html
+ create mode 100644 templates/login.html
+ create mode 100644 templates/perfil.html
+ create mode 100644 templates/produto.html
+ create mode 100644 templates/servico.html
+Deleted branch main (was 61ac346).
+remote: Invalid username or token. Password authentication is not supported for Git operations.
+fatal: Authentication failed for 'https://github.com/DuJao22/barberneon/'

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Pedidos - Painel Administrativo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            padding-top: 0 !important;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+        }
+
+        header {
+            position: static !important;
+            margin-bottom: 0 !important;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        main {
+            background: transparent !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 12px;
+            }
+
+            main.container {
+                padding-bottom: 24px !important;
+            }
+
+            h1 {
+                font-size: 22px !important;
+            }
+
+            .btn-filtro {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+
+            .pedido-card > div {
+                padding: 16px !important;
+            }
+
+            .pedido-card h3 {
+                font-size: 16px !important;
+            }
+
+            .pedido-card p {
+                font-size: 13px !important;
+            }
+
+            .pedido-card .btn {
+                font-size: 13px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <a href="/admin" class="menu-btn" style="text-decoration: none;">🏠</a>
+                <div class="logo-container">
+                    <div class="logo-text">Gerenciar Pedidos</div>
+                </div>
+                <div style="width: 48px;"></div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container" style="margin-top: 20px; padding-bottom: 40px;">
+        <h1 style="font-size: 28px; color: var(--azul-neon); margin-bottom: 24px;">📦 Pedidos</h1>
+        
+        <div style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+            <button onclick="filtrarPedidos('todos')" class="btn-filtro active" data-filtro="todos">
+                Todos
+            </button>
+            <button onclick="filtrarPedidos('aguardando_confirmacao')" class="btn-filtro" data-filtro="aguardando_confirmacao">
+                ⏳ Aguardando
+            </button>
+            <button onclick="filtrarPedidos('pago')" class="btn-filtro" data-filtro="pago">
+                ✅ Pagos
+            </button>
+            <button onclick="filtrarPedidos('cancelado')" class="btn-filtro" data-filtro="cancelado">
+                ❌ Cancelados
+            </button>
+        </div>
+        
+        {% if pedidos %}
+        <div id="lista-pedidos">
+            {% for item in pedidos %}
+            <div class="pedido-card" data-status="{{ item.pedido.status }}">
+                <div style="background: #FFFFFF; padding: 20px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                        <div>
+                            <h3 style="color: #000000; font-size: 18px; margin-bottom: 4px;">
+                                Pedido #{{ item.pedido.id }}
+                            </h3>
+                            <p style="color: #666666; font-size: 14px; margin: 0;">
+                                {{ item.pedido.cliente_nome }} - {{ item.pedido.cliente_telefone }}
+                            </p>
+                            <p style="color: #666666; font-size: 12px; margin-top: 4px;">
+                                {{ item.pedido.data_criacao|datetime_format }}
+                            </p>
+                        </div>
+                        <div style="text-align: right;">
+                            {% if item.pedido.status == 'aguardando_confirmacao' %}
+                            <span style="background: rgba(255, 193, 7, 0.1); color: #FFC107; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 600;">
+                                ⏳ Aguardando
+                            </span>
+                            {% elif item.pedido.status == 'pago' %}
+                            <span style="background: rgba(76, 175, 80, 0.1); color: #4CAF50; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 600;">
+                                ✅ Pago
+                            </span>
+                            {% elif item.pedido.status == 'cancelado' %}
+                            <span style="background: rgba(244, 67, 54, 0.1); color: #F44336; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 600;">
+                                ❌ Cancelado
+                            </span>
+                            {% else %}
+                            <span style="background: rgba(0, 0, 0, 0.1); color: #666666; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 600;">
+                                {{ item.pedido.status }}
+                            </span>
+                            {% endif %}
+                            <p style="color: #000000; font-size: 20px; font-weight: 700; margin-top: 8px;">
+                                R$ {{ "%.2f"|format(item.pedido.valor_total) }}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px solid #E0E0E0; padding-top: 12px; margin-bottom: 12px;">
+                        <h4 style="color: #000000; font-size: 14px; font-weight: 600; margin-bottom: 8px;">Itens do Pedido:</h4>
+                        {% for item_pedido in item.itens %}
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; color: #666666; font-size: 14px;">
+                            <span>
+                                {{ item_pedido.quantidade }}x {{ item_pedido.nome }}
+                                {% if item_pedido.tipo == 'produto' %}(Produto){% else %}(Serviço){% endif %}
+                            </span>
+                            <span>R$ {{ "%.2f"|format(item_pedido.valor_total) }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div style="border-top: 1px solid #E0E0E0; padding-top: 12px;">
+                        <p style="color: #666666; font-size: 14px; margin-bottom: 4px;">
+                            <strong>Pagamento:</strong> {{ item.pedido.metodo_pagamento }}
+                        </p>
+                        {% if item.pedido.observacoes %}
+                        <p style="color: #666666; font-size: 14px; margin-top: 8px;">
+                            <strong>Observações:</strong> {{ item.pedido.observacoes }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    
+                    {% if item.pedido.status == 'aguardando_confirmacao' %}
+                    <div style="display: flex; gap: 12px; margin-top: 16px;">
+                        <button onclick="confirmarPagamento({{ item.pedido.id }})" 
+                                class="btn btn-primary" 
+                                style="flex: 1; background: #4CAF50; border: none;">
+                            ✅ Confirmar Pagamento
+                        </button>
+                        <button onclick="cancelarPedido({{ item.pedido.id }})" 
+                                class="btn btn-secondary" 
+                                style="flex: 1; background: #F44336; border: none; color: white;">
+                            ❌ Cancelar Pedido
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 60px 20px; background: #FFFFFF; border-radius: 12px;">
+            <div style="font-size: 80px; margin-bottom: 20px; opacity: 0.3;">📦</div>
+            <h2 style="font-size: 24px; margin-bottom: 12px; color: #000000;">Nenhum Pedido</h2>
+            <p style="color: #666666;">Os pedidos dos clientes aparecerão aqui</p>
+        </div>
+        {% endif %}
+        
+        <div style="margin-top: 24px; text-align: center;">
+            <a href="/admin" style="color: var(--azul-neon); text-decoration: none; font-weight: 600;">← Voltar ao Painel</a>
+        </div>
+    </main>
+
+    <script>
+    function filtrarPedidos(status) {
+        const pedidos = document.querySelectorAll('.pedido-card');
+        const botoes = document.querySelectorAll('.btn-filtro');
+        
+        botoes.forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`[data-filtro="${status}"]`).classList.add('active');
+        
+        pedidos.forEach(pedido => {
+            if (status === 'todos') {
+                pedido.style.display = 'block';
+            } else {
+                if (pedido.dataset.status === status) {
+                    pedido.style.display = 'block';
+                } else {
+                    pedido.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    function confirmarPagamento(pedidoId) {
+        if (!confirm('Confirmar o pagamento deste pedido?')) {
+            return;
+        }
+        
+        fetch('/admin/confirmar-pagamento', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ pedido_id: pedidoId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Pagamento confirmado com sucesso!');
+                location.reload();
+            } else {
+                alert('Erro: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao confirmar pagamento');
+        });
+    }
+
+    function cancelarPedido(pedidoId) {
+        if (!confirm('Tem certeza que deseja cancelar este pedido? O estoque dos produtos será devolvido.')) {
+            return;
+        }
+        
+        fetch('/admin/cancelar-pedido', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ pedido_id: pedidoId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Pedido cancelado com sucesso!');
+                location.reload();
+            } else {
+                alert('Erro: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao cancelar pedido');
+        });
+    }
+    </script>
+
+    <style>
+    .btn-filtro {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 2px solid #E0E0E0;
+        background: #FFFFFF;
+        color: #666666;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-filtro:hover {
+        border-color: var(--azul-neon);
+        color: var(--azul-neon);
+    }
+
+    .btn-filtro.active {
+        background: var(--azul-neon);
+        border-color: var(--azul-neon);
+        color: #000000;
+    }
+    </style>
+</body>
+</html>

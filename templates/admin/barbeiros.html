@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Barbeiros - Barbearia Premium</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            padding-top: 0 !important;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+        }
+
+        header {
+            position: static !important;
+            margin-bottom: 0 !important;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        main {
+            background: transparent !important;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 12px;
+            }
+
+            main.container {
+                padding-bottom: 24px !important;
+            }
+
+            .tabela {
+                font-size: 12px !important;
+            }
+
+            .tabela th,
+            .tabela td {
+                padding: 10px 8px !important;
+            }
+
+            h1 {
+                font-size: 22px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <a href="/admin" class="menu-btn" style="text-decoration: none;">←</a>
+                <div class="logo-container">
+                    <div class="logo-text">Gerenciar Barbeiros</div>
+                </div>
+                <div style="width: 48px;"></div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container" style="margin-top: 20px; padding-bottom: 40px;">
+        <h1 style="font-size: 28px; color: var(--azul-neon); margin-bottom: 24px;">👨 Barbeiros</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" style="margin-bottom: 20px;">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% if barbeiros %}
+        <div style="background: #FFFFFF; border-radius: 16px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+            <table class="tabela" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #000000; border-bottom: 3px solid var(--azul-neon);">
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Nome</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Especialidade</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Telefone</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Tipo de Comissão</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Valor</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Status</th>
+                        <th style="color: #FFFFFF; padding: 16px; text-align: left; font-weight: 700;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for barbeiro in barbeiros %}
+                    <tr style="border-bottom: 1px solid #E0E0E0;">
+                        <td style="color: #000000; padding: 14px 16px; font-weight: 700;">{{ barbeiro.nome }}</td>
+                        <td style="color: #333333; padding: 14px 16px;">{{ barbeiro.especialidade or '-' }}</td>
+                        <td style="color: #333333; padding: 14px 16px;">{{ barbeiro.telefone or '-' }}</td>
+                        <td style="padding: 14px 16px;">
+                            {% if barbeiro.comissao_tipo == 'percentual' %}
+                            <span style="color: #0066CC; font-weight: 600;">📊 Percentual</span>
+                            {% else %}
+                            <span style="color: #00AA00; font-weight: 600;">💰 Fixo</span>
+                            {% endif %}
+                        </td>
+                        <td style="color: #000000; padding: 14px 16px; font-weight: 700;">
+                            {% if barbeiro.comissao_tipo == 'percentual' %}
+                            {{ barbeiro.comissao_valor }}%
+                            {% else %}
+                            R$ {{ "%.2f"|format(barbeiro.comissao_valor) }}
+                            {% endif %}
+                        </td>
+                        <td style="padding: 14px 16px;">
+                            {% if barbeiro.ativo %}
+                            <span style="color: #00AA00; font-weight: 700;">✓ Ativo</span>
+                            {% else %}
+                            <span style="color: #CC0000; font-weight: 700;">✗ Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 14px 16px;">
+                            <button onclick="editarComissao({{ barbeiro.id }}, '{{ barbeiro.nome }}', '{{ barbeiro.comissao_tipo }}', {{ barbeiro.comissao_valor }})" 
+                                    class="btn-editar">
+                                Editar Comissão
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: var(--azul-neon); text-align: center; padding: 40px; background: var(--cinza-escuro); border: 2px solid var(--azul-neon); border-radius: 12px; font-weight: 600;">Nenhum barbeiro cadastrado</p>
+        {% endif %}
+    </main>
+
+    <div id="modalComissao" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Comissão</h2>
+                <button onclick="fecharModal()" class="btn-fechar">×</button>
+            </div>
+            <form id="formComissao" method="POST" action="/admin/barbeiros/atualizar-comissao">
+                <input type="hidden" id="barbeiro_id" name="barbeiro_id">
+                
+                <div class="form-group">
+                    <label>Barbeiro</label>
+                    <input type="text" id="barbeiro_nome_display" disabled style="background: var(--cinza-medio); color: var(--cinza-claro);">
+                </div>
+
+                <div class="form-group">
+                    <label for="comissao_tipo">Tipo de Comissão</label>
+                    <select id="comissao_tipo" name="comissao_tipo" required onchange="atualizarCampoValor()">
+                        <option value="percentual">Percentual (%)</option>
+                        <option value="fixa">Valor Fixo (R$)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="comissao_valor" id="label_valor">Valor da Comissão (%)</label>
+                    <input type="number" id="comissao_valor" name="comissao_valor" step="0.01" min="0" required>
+                    <small id="hint_valor" style="color: var(--cinza-claro); display: block; margin-top: 4px;">
+                        Digite um valor entre 0 e 100
+                    </small>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" onclick="fecharModal()" class="btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn-salvar">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+    .btn-editar {
+        background: linear-gradient(135deg, var(--azul-neon) 0%, var(--azul-neon-escuro) 100%);
+        color: var(--preto);
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-editar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 217, 255, 0.4);
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: var(--cinza-escuro);
+        border: 2px solid var(--cinza-medio);
+        border-radius: 16px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px;
+        border-bottom: 2px solid var(--cinza-medio);
+    }
+
+    .modal-header h2 {
+        color: var(--azul-neon);
+        font-size: 22px;
+        margin: 0;
+    }
+
+    .btn-fechar {
+        background: none;
+        border: none;
+        color: var(--cinza-claro);
+        font-size: 32px;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        line-height: 1;
+        transition: all 0.3s ease;
+    }
+
+    .btn-fechar:hover {
+        color: var(--vermelho-neon);
+    }
+
+    #formComissao {
+        padding: 24px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--azul-neon);
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 12px 16px;
+        background: var(--preto);
+        border: 2px solid var(--cinza-medio);
+        border-radius: 12px;
+        color: var(--branco);
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--azul-neon);
+        box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn-cancelar,
+    .btn-salvar {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancelar {
+        background: var(--cinza-medio);
+        color: var(--branco);
+    }
+
+    .btn-cancelar:hover {
+        background: var(--cinza-claro);
+    }
+
+    .btn-salvar {
+        background: linear-gradient(135deg, var(--azul-neon) 0%, var(--azul-neon-escuro) 100%);
+        color: var(--preto);
+    }
+
+    .btn-salvar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+    }
+
+    .alert {
+        padding: 14px 18px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .alert-error {
+        background: rgba(255, 0, 85, 0.1);
+        border: 2px solid var(--vermelho-neon);
+        color: var(--vermelho-neon);
+    }
+
+    .alert-success {
+        background: rgba(0, 255, 136, 0.1);
+        border: 2px solid var(--verde-neon);
+        color: var(--verde-neon);
+    }
+    </style>
+
+    <script>
+    function editarComissao(id, nome, tipo, valor) {
+        document.getElementById('barbeiro_id').value = id;
+        document.getElementById('barbeiro_nome_display').value = nome;
+        document.getElementById('comissao_tipo').value = tipo;
+        document.getElementById('comissao_valor').value = valor;
+        atualizarCampoValor();
+        document.getElementById('modalComissao').classList.add('active');
+    }
+
+    function fecharModal() {
+        document.getElementById('modalComissao').classList.remove('active');
+    }
+
+    function atualizarCampoValor() {
+        const tipo = document.getElementById('comissao_tipo').value;
+        const labelValor = document.getElementById('label_valor');
+        const inputValor = document.getElementById('comissao_valor');
+        const hintValor = document.getElementById('hint_valor');
+
+        if (tipo === 'percentual') {
+            labelValor.textContent = 'Valor da Comissão (%)';
+            inputValor.setAttribute('max', '100');
+            inputValor.setAttribute('step', '0.01');
+            hintValor.textContent = 'Digite um valor entre 0 e 100';
+        } else {
+            labelValor.textContent = 'Valor da Comissão (R$)';
+            inputValor.removeAttribute('max');
+            inputValor.setAttribute('step', '0.01');
+            hintValor.textContent = 'Digite o valor fixo em reais';
+        }
+    }
+
+    document.getElementById('modalComissao').addEventListener('click', function(e) {
+        if (e.target === this) {
+            fecharModal();
+        }
+    });
+    </script>
+</body>
+</html>

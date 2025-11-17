@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% block title %}Barbearia Premium{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Menu</h3>
+            <button class="sidebar-close" id="sidebarClose">✕</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/" class="sidebar-item">
+                <span class="sidebar-icon">🏠</span>
+                <span>Início</span>
+            </a>
+            {% if session.get('cliente_id') %}
+            <a href="/perfil" class="sidebar-item">
+                <span class="sidebar-icon">👤</span>
+                <span>Meu Perfil</span>
+            </a>
+            {% else %}
+            <a href="/login-cliente" class="sidebar-item">
+                <span class="sidebar-icon">🔐</span>
+                <span>Entrar</span>
+            </a>
+            <a href="/cadastro-cliente" class="sidebar-item">
+                <span class="sidebar-icon">📝</span>
+                <span>Cadastrar</span>
+            </a>
+            {% endif %}
+            <a href="/agendamento" class="sidebar-item">
+                <span class="sidebar-icon">📅</span>
+                <span>Agendamento</span>
+            </a>
+            <a href="/contato" class="sidebar-item">
+                <span class="sidebar-icon">📞</span>
+                <span>Contato</span>
+            </a>
+            <a href="/historico" class="sidebar-item">
+                <span class="sidebar-icon">📋</span>
+                <span>Histórico</span>
+            </a>
+            {% if session.get('cliente_id') %}
+            <a href="/logout" class="sidebar-item">
+                <span class="sidebar-icon">🚪</span>
+                <span>Sair</span>
+            </a>
+            {% endif %}
+            {% if session.get('admin_logged_in') %}
+            <a href="/admin" class="sidebar-item">
+                <span class="sidebar-icon">⚙️</span>
+                <span>Admin</span>
+            </a>
+            <a href="/admin/logout" class="sidebar-item">
+                <span class="sidebar-icon">🔓</span>
+                <span>Sair do Admin</span>
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    
+    {% block content %}{% endblock %}
+    
+    <nav class="bottom-nav">
+        <div style="display:flex;width:100%;justify-content: space-around;padding:0 20px;color:white;height:100%;align-items: center;" class="text-center">
+            <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}" style="outline:none;width:auto;background-color:none;border:none;margin:0;padding:0;">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;">
+                    <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div>Catálogo</div>
+            </a>
+            
+            <a href="/carrinho" class="nav-item nav-cart-circle {% if request.path == '/carrinho' %}active{% endif %}">
+                <svg class="cart-svg-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--azul-neon);">
+                    <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.707 15.293C4.077 15.923 4.523 17 5.414 17H17M17 17C15.8954 17 15 17.8954 15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17ZM9 19C9 20.1046 8.10457 21 7 21C5.89543 21 5 20.1046 5 19C5 17.8954 5.89543 17 7 17C8.10457 17 9 17.8954 9 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                {% if carrinho_count > 0 %}
+                <span class="cart-badge-circle">{{ carrinho_count }}</span>
+                {% endif %}
+            </a>
+            
+            <a href="/historico" class="nav-item {% if request.path == '/historico' %}active{% endif %}" style="background:none;border:none;width:auto;padding:0;margin:0;outline:none;">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;">
+                    <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div>Histórico</div>
+            </a>
+        </div>
+    </nav>
+    
+    {% if carrinho_count > 0 %}
+    <a href="/carrinho" class="cart-float">
+        🛒
+        <span class="cart-badge">{{ carrinho_count }}</span>
+    </a>
+    {% endif %}
+    
+    <footer style="background: #000; color: #fff; text-align: center; padding: 30px 20px; margin-top: 40px; border-top: 2px solid var(--azul-neon);">
+        <div class="container">
+            <div style="background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(0, 217, 255, 0.05) 100%); border: 2px solid var(--azul-neon); border-radius: 16px; padding: 25px; margin-bottom: 20px;">
+                <p style="font-size: 16px; font-weight: 700; color: var(--azul-neon); margin-bottom: 12px;">
+                    💻 Sistema Desenvolvido Por
+                </p>
+                <p style="font-size: 20px; font-weight: 900; color: #fff; margin-bottom: 8px;">
+                    João Layon
+                </p>
+                <p style="font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 16px;">
+                    Desenvolvedor Full Stack
+                </p>
+                <a href="https://dujao22.github.io/Apresentacao_Solucoes_Digitais-/" 
+                   target="_blank"
+                   style="display: inline-block; padding: 12px 28px; background: linear-gradient(135deg, var(--azul-neon), #00B8E6); color: #000; font-size: 14px; font-weight: 700; border-radius: 25px; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 217, 255, 0.4);">
+                    🚀 Ver Meus Serviços
+                </a>
+            </div>
+            <p style="font-size: 12px; color: rgba(255, 255, 255, 0.6);">
+                © 2024 Sistema de Gestão para Barbearia. Todos os direitos reservados.
+            </p>
+        </div>
+    </footer>
+    
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

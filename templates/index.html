@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% from "_components.html" import produto_card %}
+
+{% block title %}Barbearia Premium - Início{% endblock %}
+
+{% block content %}
+<header>
+    <div class="container">
+        <div class="header-top">
+            <button class="menu-btn">☰</button>
+            <div class="logo-container">
+                <div class="logo">{{ site_config.get('logo_emoji', '💈') }}</div>
+                <div class="logo-text">{{ site_config.get('nome_barbearia', 'Barbearia Premium') }}</div>
+            </div>
+            {% if session.get('admin_logged_in') %}
+            <a href="/admin" class="menu-btn" style="text-decoration: none;">⚙️</a>
+            {% elif session.get('cliente_id') %}
+            <a href="/perfil" class="menu-btn" style="text-decoration: none;">👤</a>
+            {% else %}
+            <a href="/login-cliente" class="menu-btn" style="text-decoration: none;">👤</a>
+            {% endif %}
+        </div>
+        
+        <div class="search-bar">
+            <form action="/buscar" method="get">
+                <input type="text" name="q" placeholder="Procurar por serviços ou produtos...">
+            </form>
+        </div>
+        
+        <div class="status-bar">
+            <span>Atendimento em {{ site_config.get('tempo_atendimento', '30') }}min</span>
+            {% if status_aberto %}
+            <span class="status-aberto">Aberto</span>
+            {% else %}
+            <span class="status-fechado">Fechado</span>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <div class="categorias-scroll">
+        {% for categoria in categorias %}
+        <a href="/categoria/{{ categoria.id }}" class="categoria-card">
+            <div class="categoria-icon">{{ categoria.icone }}</div>
+            <div class="categoria-nome">{{ categoria.nome }}</div>
+        </a>
+        {% endfor %}
+    </div>
+    
+    {% if servicos_destaque or produtos_destaque %}
+    <h2 class="secao-titulo">⭐ Mais Vendidos</h2>
+    <div class="produtos-grid">
+        {% for servico in servicos_destaque %}
+        {{ produto_card(servico, 'servico') }}
+        {% endfor %}
+        
+        {% for produto in produtos_destaque %}
+        {{ produto_card(produto, 'produto') }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if servicos_promocao or produtos_promocao %}
+    <h2 class="secao-titulo">🔥 Promoções</h2>
+    <div class="produtos-grid">
+        {% for servico in servicos_promocao %}
+        {{ produto_card(servico, 'servico') }}
+        {% endfor %}
+        
+        {% for produto in produtos_promocao %}
+        {{ produto_card(produto, 'produto') }}
+        {% endfor %}
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "_components.html" import produto_card %}
+
+{% block title %}{{ categoria.nome }} - Barbearia Premium{% endblock %}
+
+{% block content %}
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="/" class="menu-btn" style="text-decoration: none;">←</a>
+            <div class="logo-container">
+                <div class="logo-text">{{ categoria.nome }}</div>
+            </div>
+            <div style="width: 48px;"></div>
+        </div>
+    </div>
+</header>
+
+<main class="container" style="margin-top: 20px;">
+    <div style="text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 80px; margin-bottom: 12px;">{{ categoria.icone }}</div>
+        <h1 style="font-size: 28px; color: var(--azul-neon);">{{ categoria.nome }}</h1>
+    </div>
+    
+    {% if servicos or produtos %}
+    <div class="produtos-grid">
+        {% for servico in servicos %}
+        {{ produto_card(servico, 'servico') }}
+        {% endfor %}
+        
+        {% for produto in produtos %}
+        {{ produto_card(produto, 'produto') }}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px;">
+        <p style="color: var(--cinza-claro);">Nenhum item nesta categoria</p>
+        <a href="/" class="btn btn-primary" style="margin-top: 20px;">Voltar ao Catálogo</a>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastro - Barbearia Premium{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <button class="menu-btn" onclick="window.history.back()">←</button>
+                <div class="logo-container">
+                    <div class="logo">💈</div>
+                    <div class="logo-text">Barbearia Premium</div>
+                </div>
+                <div style="width: 48px;"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>Criar Conta</h1>
+                <p>Crie sua conta para agendar seus cortes</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/cadastro" class="auth-form">
+                <div class="form-group">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required minlength="3">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone">Telefone (opcional)</label>
+                    <input type="tel" id="telefone" name="telefone" placeholder="(11) 98765-4321">
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" placeholder="Mínimo 6 caracteres" required minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmar_senha">Confirmar Senha</label>
+                    <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Digite a senha novamente" required minlength="6">
+                </div>
+
+                <button type="submit" class="btn-primary">Criar Conta</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Já tem uma conta?</p>
+                <a href="/login-cliente" class="link-secondary">Fazer login</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+.auth-page {
+    min-height: 100vh;
+    background-color: var(--preto);
+    padding-bottom: 100px;
+}
+
+.auth-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 0 16px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--azul-neon);
+    margin-bottom: 8px;
+}
+
+.auth-header p {
+    font-size: 14px;
+    color: var(--cinza-claro);
+}
+
+.auth-form {
+    background: var(--cinza-escuro);
+    border: 2px solid var(--cinza-medio);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--azul-neon);
+    margin-bottom: 8px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--cinza-medio);
+    background: var(--preto);
+    color: var(--branco);
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--azul-neon);
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+}
+
+.form-group input::placeholder {
+    color: var(--cinza-claro);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--azul-neon) 0%, var(--azul-neon-escuro) 100%);
+    border: none;
+    border-radius: 12px;
+    color: var(--preto);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 24px;
+}
+
+.auth-footer p {
+    font-size: 14px;
+    color: var(--cinza-claro);
+    margin-bottom: 8px;
+}
+
+.link-secondary {
+    color: var(--azul-neon);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.link-secondary:hover {
+    text-decoration: underline;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.alert-error {
+    background: rgba(255, 0, 85, 0.1);
+    border: 2px solid var(--vermelho-neon);
+    color: var(--vermelho-neon);
+}
+
+.alert-success {
+    background: rgba(0, 255, 136, 0.1);
+    border: 2px solid var(--verde-neon);
+    color: var(--verde-neon);
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 0 12px;
+    }
+    
+    .auth-form {
+        padding: 20px 16px;
+    }
+}
+</style>
+{% endblock %}

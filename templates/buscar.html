@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "_components.html" import produto_card %}
+
+{% block title %}Buscar - Barbearia Premium{% endblock %}
+
+{% block content %}
+<header>
+    <div class="container">
+        <div class="header-top">
+            <a href="/" class="menu-btn" style="text-decoration: none;">←</a>
+            <div class="logo-container">
+                <div class="logo-text">Resultados da Busca</div>
+            </div>
+            <div style="width: 48px;"></div>
+        </div>
+        
+        <div class="search-bar">
+            <form action="/buscar" method="get">
+                <input type="text" name="q" placeholder="Procurar por serviços ou produtos..." value="{{ query }}">
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="container" style="margin-top: 20px;">
+    <h2 class="secao-titulo">Resultados para "{{ query }}"</h2>
+    
+    {% if resultados %}
+    <div class="produtos-grid">
+        {% for item in resultados %}
+        {{ produto_card(item, item.tipo) }}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px;">
+        <div style="font-size: 80px; margin-bottom: 20px; opacity: 0.3;">🔍</div>
+        <h2 style="font-size: 24px; margin-bottom: 12px;">Nenhum resultado encontrado</h2>
+        <p style="color: var(--cinza-claro); margin-bottom: 24px;">Tente buscar por outro termo</p>
+        <a href="/" class="btn btn-primary">Voltar ao Catálogo</a>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}

@@ -1,0 +1,561 @@
+
+
+{% extends "base.html" %}
+
+{% block title %}Meu Perfil - Barbearia Premium{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: #FFFFFF !important;
+        padding-top: 180px !important;
+    }
+
+    .perfil-page {
+        min-height: 100vh;
+        padding-bottom: 100px;
+        background: #FFFFFF;
+    }
+    
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+    }
+
+    .perfil-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 24px 16px;
+    }
+
+    .profile-header-card {
+        background: #FFFFFF;
+        border: 3px solid var(--azul-neon);
+        border-radius: 24px;
+        padding: 32px 24px;
+        text-align: center;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
+    }
+
+    .profile-header-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(0, 229, 255, 0.05) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .profile-avatar-wrapper {
+        position: relative;
+        z-index: 1;
+        margin-bottom: 20px;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, var(--azul-neon), var(--verde-neon));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        margin: 0 auto;
+        box-shadow: 0 8px 32px rgba(0, 229, 255, 0.4);
+        border: 4px solid #FFFFFF;
+    }
+
+    .profile-name {
+        font-size: 28px;
+        font-weight: 900;
+        color: #000000 !important;
+        margin-bottom: 8px;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-info {
+        color: #333333 !important;
+        font-size: 14px;
+        font-weight: 600;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+
+    .stat-card {
+        background: #FFFFFF;
+        border: 3px solid var(--azul-neon);
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(0, 255, 255, 0.35);
+    }
+
+    .stat-card:hover {
+        border-color: var(--verde-neon);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 255, 255, 0.4);
+    }
+
+    .stat-icon {
+        font-size: 32px;
+        margin-bottom: 12px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: 900;
+        color: #000000 !important;
+        margin-bottom: 4px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: #666666 !important;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 32px 0 20px;
+    }
+
+    .section-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: #000000 !important;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .appointments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+
+    .appointment-card {
+        background: #FFFFFF;
+        border: 3px solid var(--azul-neon);
+        border-radius: 18px;
+        padding: 24px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(0, 255, 255, 0.35);
+    }
+
+    .appointment-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--azul-neon), var(--verde-neon));
+    }
+
+    .appointment-card:hover {
+        border-color: var(--verde-neon);
+        transform: translateX(4px);
+        box-shadow: 0 8px 24px rgba(0, 255, 255, 0.4);
+    }
+
+    .appointment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .service-name {
+        font-size: 18px;
+        font-weight: 800;
+        color: #000000 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-agendado {
+        background: rgba(0, 229, 255, 0.15);
+        color: var(--azul-neon);
+        border: 2px solid var(--azul-neon);
+    }
+
+    .status-confirmado {
+        background: rgba(0, 255, 136, 0.15);
+        color: var(--verde-neon);
+        border: 2px solid var(--verde-neon);
+    }
+
+    .status-cancelado {
+        background: rgba(255, 17, 102, 0.15);
+        color: var(--vermelho-neon);
+        border: 2px solid var(--vermelho-neon);
+    }
+
+    .status-concluido {
+        background: rgba(255, 215, 0, 0.15);
+        color: var(--amarelo-neon);
+        border: 2px solid var(--amarelo-neon);
+    }
+
+    .appointment-details {
+        display: grid;
+        gap: 10px;
+    }
+
+    .detail-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #000000 !important;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .detail-icon {
+        color: var(--azul-neon) !important;
+        font-size: 16px;
+    }
+
+    .appointment-notes {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 2px solid var(--azul-neon);
+        color: #333333 !important;
+        font-size: 13px;
+        font-style: italic;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        background: #FFFFFF;
+        border: 3px dashed var(--azul-neon);
+        border-radius: 20px;
+        padding: 60px 40px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+    }
+
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .empty-text {
+        color: #333333 !important;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .action-buttons {
+        display: grid;
+        gap: 16px;
+        margin-top: 32px;
+    }
+
+    .action-btn {
+        background: #FFFFFF !important;
+        border: 3px solid var(--azul-neon) !important;
+        border-radius: 16px;
+        padding: 18px 24px;
+        color: #000000 !important;
+        font-size: 16px;
+        font-weight: 800;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn:hover {
+        background: var(--azul-neon) !important;
+        color: #000000 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 229, 255, 0.4);
+    }
+
+    .action-btn.logout {
+        border-color: var(--vermelho-neon) !important;
+        color: #000000 !important;
+    }
+
+    .action-btn.logout:hover {
+        background: var(--vermelho-neon) !important;
+        color: #000000 !important;
+    }
+
+    .alert {
+        padding: 14px 20px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .alert-error {
+        background: rgba(255, 17, 102, 0.15);
+        border: 2px solid var(--vermelho-neon);
+        color: var(--vermelho-neon);
+    }
+
+    .alert-success {
+        background: rgba(0, 255, 136, 0.15);
+        border: 2px solid var(--verde-neon);
+        color: var(--verde-neon);
+    }
+
+    @media (max-width: 768px) {
+        body {
+            padding-top: 160px !important;
+        }
+        
+        .perfil-container {
+            padding: 16px 12px;
+        }
+
+        .profile-header-card {
+            padding: 24px 16px;
+            margin-top: 8px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 40px;
+        }
+
+        .profile-name {
+            font-size: 22px;
+        }
+
+        .profile-info {
+            font-size: 13px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .stat-card {
+            padding: 16px;
+        }
+
+        .stat-icon {
+            font-size: 28px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+        }
+
+        .section-title {
+            font-size: 18px;
+        }
+
+        .appointment-card {
+            padding: 16px;
+        }
+
+        .service-name {
+            font-size: 16px;
+        }
+
+        .detail-row {
+            font-size: 13px;
+        }
+
+        .action-btn {
+            padding: 12px 16px;
+            font-size: 13px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        body {
+            padding-top: 150px !important;
+        }
+        
+        .profile-name {
+            font-size: 20px;
+        }
+
+        .stats-grid {
+            gap: 10px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+        }
+        
+        header {
+            padding: 8px 0;
+        }
+    }
+</style>
+
+<div class="perfil-page">
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <a href="/" class="menu-btn" style="text-decoration: none;">←</a>
+                <div class="logo-container">
+                    <div class="logo">💈</div>
+                    <div class="logo-text">Barbearia Premium</div>
+                </div>
+                <div style="width: 48px;"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="perfil-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span>{% if category == 'success' %}✓{% else %}⚠{% endif %}</span>
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="profile-header-card">
+                <div class="profile-avatar-wrapper">
+                    <div class="profile-avatar">👤</div>
+                </div>
+                <h1 class="profile-name">{{ cliente.nome }}</h1>
+                <p class="profile-info">{{ cliente.email or '' }}</p>
+                {% if cliente.telefone %}
+                <p class="profile-info">📱 {{ cliente.telefone }}</p>
+                {% endif %}
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value">{{ cliente.pontos_fidelidade or 0 }}</div>
+                    <div class="stat-label">Pontos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-value">{{ cliente.total_gasto|currency }}</div>
+                    <div class="stat-label">Total Gasto</div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <span style="font-size: 28px;">📅</span>
+                <h2 class="section-title">Meus Agendamentos</h2>
+            </div>
+
+            {% if agendamentos %}
+            <div class="appointments-list">
+                {% for agendamento in agendamentos %}
+                <div class="appointment-card">
+                    <div class="appointment-header">
+                        <span class="service-name">{{ agendamento.servico_nome }}</span>
+                        <span class="status-badge status-{{ agendamento.status }}">
+                            {{ agendamento.status }}
+                        </span>
+                    </div>
+                    <div class="appointment-details">
+                        <div class="detail-row">
+                            <span class="detail-icon">👨‍✂️</span>
+                            <span>{{ agendamento.barbeiro_nome }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-icon">📅</span>
+                            <span>{{ agendamento.data_hora|datetime_format }}</span>
+                        </div>
+                        {% if agendamento.valor %}
+                        <div class="detail-row">
+                            <span class="detail-icon">💰</span>
+                            <span>{{ agendamento.valor|currency }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if agendamento.observacoes %}
+                    <div class="appointment-notes">
+                        📝 {{ agendamento.observacoes }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📅</div>
+                <p class="empty-text">Você ainda não tem agendamentos</p>
+                <a href="/agendamento" class="action-btn" style="display: inline-flex; width: auto; margin: 16px auto 0;">
+                    <span>📅</span>
+                    <span>Agendar Agora</span>
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="action-buttons">
+                <a href="/agendamento" class="action-btn">
+                    <span>📅</span>
+                    <span>Novo Agendamento</span>
+                </a>
+                <a href="/logout" class="action-btn logout">
+                    <span>🚪</span>
+                    <span>Sair da Conta</span>
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

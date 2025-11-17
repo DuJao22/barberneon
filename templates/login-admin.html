@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Login Admin - Barbearia Premium{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <button class="menu-btn" onclick="window.history.back()">←</button>
+                <div class="logo-container">
+                    <div class="logo">💈</div>
+                    <div class="logo-text">Barbearia Premium</div>
+                </div>
+                <div style="width: 48px;"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>Painel Administrativo</h1>
+                <p>Acesso restrito para administradores e funcionários</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/login-admin" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" placeholder="Sua senha" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn-primary">Entrar no Painel</button>
+            </form>
+
+            <div class="auth-footer" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--cinza-medio);">
+                <p style="font-size: 13px;">É cliente?</p>
+                <a href="/login-cliente" class="link-secondary" style="font-size: 14px;">Fazer login como cliente</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+.auth-page {
+    min-height: 100vh;
+    background-color: var(--preto);
+    padding-bottom: 100px;
+}
+
+.auth-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 0 16px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--azul-neon);
+    margin-bottom: 8px;
+}
+
+.auth-header p {
+    font-size: 15px;
+    color: #333333;
+}
+
+.auth-form {
+    background: var(--cinza-escuro);
+    border: 2px solid var(--cinza-medio);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #000000;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--cinza-medio);
+    background: var(--preto);
+    color: var(--branco);
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--azul-neon);
+    box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+}
+
+.form-group input::placeholder {
+    color: var(--cinza-claro);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--azul-neon) 0%, var(--azul-neon-escuro) 100%);
+    border: none;
+    border-radius: 12px;
+    color: var(--preto);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 24px;
+}
+
+.auth-footer p {
+    font-size: 14px;
+    color: #333333;
+    margin-bottom: 8px;
+}
+
+.link-secondary {
+    color: var(--azul-neon);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.link-secondary:hover {
+    text-decoration: underline;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.alert-error {
+    background: rgba(255, 0, 85, 0.1);
+    border: 2px solid var(--vermelho-neon);
+    color: var(--vermelho-neon);
+}
+
+.alert-success {
+    background: rgba(0, 255, 136, 0.1);
+    border: 2px solid var(--verde-neon);
+    color: var(--verde-neon);
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 0 12px;
+    }
+
+    .auth-form {
+        padding: 20px 16px;
+    }
+}
+</style>
+{% endblock %}
